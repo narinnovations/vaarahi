@@ -38,6 +38,7 @@ import { Route as AuthenticatedAdminCouponsRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminCategoriesRouteImport } from './routes/_authenticated/admin/categories'
 import { Route as AuthenticatedAdminBannersRouteImport } from './routes/_authenticated/admin/banners'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin/analytics'
+import { Route as AuthenticatedAccountIdRouteImport } from './routes/_authenticated/account/$id'
 import { Route as AuthenticatedAdminInventoryIndexRouteImport } from './routes/_authenticated/admin/inventory.index'
 import { Route as LovableEmailQueueProcessRouteImport } from './routes/lovable/email/queue/process'
 import { Route as AuthenticatedAdminProductsNewRouteImport } from './routes/_authenticated/admin/products.new'
@@ -210,6 +211,11 @@ const AuthenticatedAdminAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AuthenticatedAdminRouteRoute,
   } as any)
+const AuthenticatedAccountIdRoute = AuthenticatedAccountIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => AuthenticatedAccountRoute,
+} as any)
 const AuthenticatedAdminInventoryIndexRoute =
   AuthenticatedAdminInventoryIndexRouteImport.update({
     id: '/',
@@ -309,10 +315,11 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
-  '/account': typeof AuthenticatedAccountRoute
+  '/account': typeof AuthenticatedAccountRouteWithChildren
   '/policies/$slug': typeof PoliciesSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
+  '/account/$id': typeof AuthenticatedAccountIdRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRouteWithChildren
@@ -353,10 +360,11 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/account': typeof AuthenticatedAccountRoute
+  '/account': typeof AuthenticatedAccountRouteWithChildren
   '/policies/$slug': typeof PoliciesSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products': typeof ProductsIndexRoute
+  '/account/$id': typeof AuthenticatedAccountIdRoute
   '/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/admin/categories': typeof AuthenticatedAdminCategoriesRouteWithChildren
@@ -399,10 +407,11 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
-  '/_authenticated/account': typeof AuthenticatedAccountRoute
+  '/_authenticated/account': typeof AuthenticatedAccountRouteWithChildren
   '/policies/$slug': typeof PoliciesSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
   '/products/': typeof ProductsIndexRoute
+  '/_authenticated/account/$id': typeof AuthenticatedAccountIdRoute
   '/_authenticated/admin/analytics': typeof AuthenticatedAdminAnalyticsRoute
   '/_authenticated/admin/banners': typeof AuthenticatedAdminBannersRoute
   '/_authenticated/admin/categories': typeof AuthenticatedAdminCategoriesRouteWithChildren
@@ -450,6 +459,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/products/$slug'
     | '/products/'
+    | '/account/$id'
     | '/admin/analytics'
     | '/admin/banners'
     | '/admin/categories'
@@ -494,6 +504,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/products/$slug'
     | '/products'
+    | '/account/$id'
     | '/admin/analytics'
     | '/admin/banners'
     | '/admin/categories'
@@ -539,6 +550,7 @@ export interface FileRouteTypes {
     | '/policies/$slug'
     | '/products/$slug'
     | '/products/'
+    | '/_authenticated/account/$id'
     | '/_authenticated/admin/analytics'
     | '/_authenticated/admin/banners'
     | '/_authenticated/admin/categories'
@@ -791,6 +803,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/analytics'
       preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/account/$id': {
+      id: '/_authenticated/account/$id'
+      path: '/$id'
+      fullPath: '/account/$id'
+      preLoaderRoute: typeof AuthenticatedAccountIdRouteImport
+      parentRoute: typeof AuthenticatedAccountRoute
     }
     '/_authenticated/admin/inventory/': {
       id: '/_authenticated/admin/inventory/'
@@ -1046,14 +1065,25 @@ const AuthenticatedAdminRouteRouteWithChildren =
     AuthenticatedAdminRouteRouteChildren,
   )
 
+interface AuthenticatedAccountRouteChildren {
+  AuthenticatedAccountIdRoute: typeof AuthenticatedAccountIdRoute
+}
+
+const AuthenticatedAccountRouteChildren: AuthenticatedAccountRouteChildren = {
+  AuthenticatedAccountIdRoute: AuthenticatedAccountIdRoute,
+}
+
+const AuthenticatedAccountRouteWithChildren =
+  AuthenticatedAccountRoute._addFileChildren(AuthenticatedAccountRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
-  AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
+  AuthenticatedAccountRoute: typeof AuthenticatedAccountRouteWithChildren
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
-  AuthenticatedAccountRoute: AuthenticatedAccountRoute,
+  AuthenticatedAccountRoute: AuthenticatedAccountRouteWithChildren,
 }
 
 const AuthenticatedRouteRouteWithChildren =

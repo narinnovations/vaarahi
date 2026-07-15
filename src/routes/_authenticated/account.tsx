@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
@@ -6,12 +6,17 @@ import { formatINR } from "@/lib/format";
 import { LogOut, ShieldCheck, Check, Package, Truck, PackageCheck, ExternalLink } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/account")({
-  head: () => ({ meta: [{ title: "My Account — Satyabhama" }, { name: "robots", content: "noindex" }] }),
+  head: () => ({ meta: [{ title: "My Account — Vaarahi" }, { name: "robots", content: "noindex" }] }),
   component: AccountPage,
 });
 
 function AccountPage() {
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+
   const { user, isAdmin, signOut } = useAuth();
+
   const { data: orders } = useQuery({
     queryKey: ["my-orders", user?.id],
     enabled: !!user,
@@ -19,11 +24,15 @@ function AccountPage() {
       const { data, error } = await supabase
         .from("orders")
         .select("id, order_number, total, status, created_at, courier_name, tracking_number, tracking_url, dispatch_date, estimated_delivery_date, shipping_notes")
+        .eq("user_id", user!.id)
         .order("created_at", { ascending: false });
       if (error) throw error;
       return data ?? [];
     },
   });
+  if (pathname !== "/account") {
+    return <Outlet />;
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
@@ -59,7 +68,12 @@ function AccountPage() {
         ) : (
           <ul className="space-y-4">
             {orders.map((o) => (
-              <li key={o.id} className="rounded-xl border border-border/60 bg-background p-4">
+              <Link
+                key={o.id}
+                to="/account/$id"
+                params={{ id: o.id }}
+                className="block rounded-xl border border-border/60 bg-background p-4 transition hover:border-primary hover:shadow-soft"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <div>
                     <div className="font-medium">Order {o.order_number}</div>
@@ -101,7 +115,7 @@ function AccountPage() {
                     )}
                   </div>
                 )}
-              </li>
+              </Link>
             ))}
           </ul>
         )}
@@ -137,9 +151,8 @@ function ShippingTimeline({
             <div key={s.key} className="flex flex-1 items-center last:flex-none">
               <div className="flex flex-col items-center">
                 <div
-                  className={`grid h-8 w-8 place-items-center rounded-full border-2 ${
-                    done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground"
-                  }`}
+                  className={`grid h-8 w-8 place-items-center rounded-full border-2 ${done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground"
+                    }`}
                 >
                   <s.Icon className="h-4 w-4" />
                 </div>

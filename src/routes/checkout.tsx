@@ -117,13 +117,18 @@ function CheckoutPage() {
           return;
         }
       }
-
+      // Generate Order Number
+      const orderNumber =
+        "VRH" +
+        new Date().getFullYear().toString().slice(-2) +
+        Date.now().toString().slice(-6);
       // ============================
       // Continue placing order
       // ============================
       const { data: order, error } = await supabase
         .from("orders")
         .insert({
+          order_number: orderNumber,
           user_id: user.id,
           customer_name: String(fd.get("name") ?? ""),
           customer_email: String(fd.get("email") ?? user.email ?? ""),
@@ -136,6 +141,8 @@ function CheckoutPage() {
           shipping,
           total,
           payment_method: String(fd.get("pay") ?? "cod"),
+          status: "pending",
+          payment_status: "pending",
         })
         .select("id")
         .single();
@@ -238,6 +245,7 @@ function CheckoutPage() {
                   <input
                     type="radio"
                     name="pay"
+                    value={m.id}
                     defaultChecked={i === 0}
                     className="text-primary accent-primary"
                   />
