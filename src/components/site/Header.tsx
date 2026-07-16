@@ -29,15 +29,15 @@ export function Header() {
   const close = () => setMobileOpen(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/85 backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-3 py-3 sm:gap-4 sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-40 border-b border-border/60 bg-background/90 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 sm:gap-4 sm:px-6 sm:py-3 lg:px-8">
         <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
           <SheetTrigger asChild>
             <button
               className="rounded-full p-2 text-foreground hover:bg-blush lg:hidden"
               aria-label="Open menu"
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
             </button>
           </SheetTrigger>
           <SheetContent side="left" className="w-[85%] max-w-sm overflow-y-auto p-6">
@@ -109,10 +109,10 @@ export function Header() {
           <img
             src={logo}
             alt={brandName}
-            className="h-10 w-10 rounded-full object-cover ring-2 ring-champagne/40 sm:h-11 sm:w-11"
+            className="h-8 w-8 rounded-full object-cover ring-2 ring-champagne/40 sm:h-11 sm:w-11"
           />
           <div className="block min-w-0">
-            <div className="truncate font-display text-lg font-semibold leading-none tracking-[0.18em] sm:text-2xl">
+            <div className="truncate font-display text-base font-semibold leading-none tracking-[0.15em] sm:text-2xl">
               {brandName}
             </div>
             <div className="mt-1 hidden text-[10px] tracking-[0.25em] text-muted-foreground uppercase sm:block">
@@ -134,14 +134,14 @@ export function Header() {
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
           <button className="rounded-full p-2 hover:bg-blush lg:hidden" aria-label="Search">
-            <Search className="h-5 w-5" />
+            <Search className="h-4.5 w-4.5 sm:h-5 sm:w-5"/>
           </button>
           <Link
             to="/account"
             className="inline-flex rounded-full p-2 hover:bg-blush"
             aria-label="Wishlist"
           >
-            <Heart className="h-5 w-5" />
+            <Heart className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
           </Link>
           {isAdmin && (
             <Link
@@ -150,7 +150,7 @@ export function Header() {
               aria-label="Admin"
               title="Admin panel"
             >
-              <ShieldCheck className="h-5 w-5" />
+              <ShieldCheck className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
             </Link>
           )}
           <Link
@@ -158,7 +158,7 @@ export function Header() {
             className="inline-flex rounded-full p-2 hover:bg-blush"
             aria-label={user ? "Account" : "Sign in"}
           >
-            <User className="h-5 w-5" />
+            <User className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
           </Link>
 
           <Link
@@ -166,7 +166,7 @@ export function Header() {
             className="relative rounded-full p-2 transition hover:bg-blush"
             aria-label={`Shopping bag with ${count} items`}
           >
-            <ShoppingBag className="h-5 w-5" />
+            <ShoppingBag className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
             {count > 0 && (
               <span className="bg-rose-gradient text-primary-foreground absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold shadow-soft">
                 {count}

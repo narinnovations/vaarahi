@@ -52,24 +52,24 @@ function ProductsPage() {
   return (
     <div>
       <section className="bg-blush-gradient border-b border-border/60">
-        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-14 lg:px-8">
           <p className="text-xs tracking-[0.3em] text-primary uppercase">Collection</p>
-          <h1 className="mt-2 font-serif text-4xl font-medium sm:text-5xl">
+          <h1 className="mt-2 font-serif text-3xl font-medium sm:text-5xl">
             {activeCategory?.name ?? "Shop All"}
           </h1>
-          <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground sm:mt-3">
             {activeCategory?.description ?? "Explore our full luxury edit — jewellery, bangles, bags, beauty and more."}
           </p>
         </div>
       </section>
 
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-10 lg:px-8">
         <div className="mb-8 grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:flex-wrap sm:justify-between">
-          <div className="flex min-w-0 flex-wrap gap-2">
+          <div className="flex min-w-0 gap-2 overflow-x-auto pb-2 scrollbar-hide sm:flex-wrap">
             <Link
               to="/products"
               search={{}}
-              className={`rounded-full border px-4 py-1.5 text-xs tracking-wide uppercase transition ${
+              className={`whitespace-nowrap rounded-full border px-3 py-2 text-[11px] sm:px-4 sm:py-1.5 sm:text-xs tracking-wide uppercase transition ${
                 !search.category
                   ? "bg-charcoal text-pearl border-charcoal"
                   : "border-border hover:border-primary hover:text-primary"
@@ -82,7 +82,7 @@ function ProductsPage() {
                 key={c.slug}
                 to="/products"
                 search={{ category: c.slug }}
-                className={`rounded-full border px-4 py-1.5 text-xs tracking-wide uppercase transition ${
+                className={`whitespace-nowrap rounded-full border px-3 py-2 text-[11px] sm:px-4 sm:py-1.5 sm:text-xs tracking-wide uppercase transition ${
                   search.category === c.slug
                     ? "bg-charcoal text-pearl border-charcoal"
                     : "border-border hover:border-primary hover:text-primary"
@@ -103,7 +103,7 @@ function ProductsPage() {
                 },
               })
             }
-            className="shrink-0 rounded-full border border-border bg-background px-4 py-2 text-xs tracking-wide uppercase"
+            className="h-10 shrink-0 rounded-full border border-border bg-background px-4 text-[11px] uppercase sm:text-xs"
           >
             <option value="latest">Sort: Latest</option>
             <option value="price-asc">Price: Low → High</option>
@@ -113,13 +113,13 @@ function ProductsPage() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => (
               <div key={i} className="aspect-[4/6] animate-pulse rounded-2xl bg-blush" />
             ))}
           </div>
         ) : sorted.length === 0 ? (
-          <div className="rounded-2xl border border-dashed py-24 text-center text-muted-foreground">
+          <div className="rounded-2xl border border-dashed py-14 sm:py-24 text-center text-muted-foreground">
             No products in this collection yet.
           </div>
         ) : (

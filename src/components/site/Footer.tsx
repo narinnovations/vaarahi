@@ -9,20 +9,20 @@ export function Footer() {
   const wa = st.whatsapp.replace(/\D/g, "");
 
   return (
-    <footer className="mt-24 border-t border-border/60 bg-blush-gradient">
-      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-        <div className="grid gap-12 md:grid-cols-4">
+    <footer className="mt-14 border-t border-border/60 bg-blush-gradient sm:mt-24">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16 lg:px-8">
+        <div className="grid gap-8 md:grid-cols-4 md:gap-12">
           <div className="md:col-span-1">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="" className="h-12 w-12 rounded-full object-cover" />
+              <img src={logo} alt="" className="h-10 w-10 rounded-full object-cover sm:h-12 sm:w-12" />
               <div>
-                <div className="font-display text-xl font-semibold tracking-[0.18em]">{st.name}</div>
+                <div className="font-display text-lg font-semibold tracking-[0.16em] sm:text-xl">{st.name}</div>
                 <div className="text-[10px] tracking-[0.25em] text-muted-foreground uppercase">
                   {st.tagline}
                 </div>
               </div>
             </div>
-            <p className="mt-5 text-sm leading-relaxed text-muted-foreground">{s.footer.about}</p>
+            <p className="mt-4 text-sm leading-relaxed text-muted-foreground sm:mt-5">{s.footer.about}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               {st.instagram && (
                 <SocialIcon href={`https://instagram.com/${st.instagram}`} label="Instagram" Icon={Instagram} />
@@ -97,7 +97,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-14 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
+        <div className="mt-8 flex flex-col sm:mt-14 items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
           <p>© {new Date().getFullYear()} {st.name}. All rights reserved.</p>
           
         </div>
@@ -112,7 +112,7 @@ function SocialIcon({ href, label, Icon }: { href: string; label: string; Icon: 
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="grid h-10 w-10 place-items-center rounded-full bg-background/70 text-primary transition hover:bg-primary hover:text-primary-foreground"
+      className="grid h-9 w-9 place-items-center sm:h-10 sm:w-10 rounded-full bg-background/70 text-primary transition hover:bg-primary hover:text-primary-foreground"
       aria-label={label}
     >
       <Icon className="h-4 w-4" />
@@ -123,8 +123,8 @@ function SocialIcon({ href, label, Icon }: { href: string; label: string; Icon: 
 function FooterCol({ title, links }: { title: string; links: { label: string; to: string }[] }) {
   return (
     <div>
-      <h4 className="font-display text-base font-semibold tracking-widest uppercase">{title}</h4>
-      <ul className="mt-5 space-y-2.5 text-sm text-muted-foreground">
+      <h4 className="font-display text-sm font-semibold tracking-widest uppercase sm:text-base">{title}</h4>
+      <ul className="mt-4 space-y-2 sm:mt-5 sm:space-y-2.5 text-sm text-muted-foreground">
         {links.map((l) => (
           <li key={l.label}>
             <Link to={l.to} className="transition hover:text-primary">

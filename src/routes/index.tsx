@@ -24,7 +24,7 @@ function HomePage() {
 
       {/* Trust strip */}
       <section className="border-b border-border/60 bg-blush/40">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-6 py-10 sm:grid-cols-4">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-6 sm:grid-cols-4 sm:gap-6 sm:px-6 sm:py-10">
           {[
             { Icon: Gem, title: "Handcrafted", copy: "In small batches" },
             { Icon: Award, title: "BIS Hallmark", copy: "Where applicable" },
@@ -32,12 +32,12 @@ function HomePage() {
             { Icon: Sparkles, title: "Easy Returns", copy: "7-day happiness" },
           ].map((t) => (
             <div key={t.title} className="flex items-center gap-3">
-              <div className="bg-rose-gradient text-primary-foreground grid h-11 w-11 shrink-0 place-items-center rounded-full shadow-soft">
+              <div className="bg-rose-gradient text-primary-foreground grid h-9 w-9 shrink-0 place-items-center rounded-full shadow-soft sm:h-11 sm:w-11">
                 <t.Icon className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <div className="font-serif text-lg leading-tight font-medium">{t.title}</div>
-                <div className="text-xs text-muted-foreground">{t.copy}</div>
+                <div className="font-serif text-base leading-tight font-medium sm:text-lg">{t.title}</div>
+                <div className="text-[11px] text-muted-foreground sm:text-xs">{t.copy}</div>
               </div>
             </div>
           ))}
@@ -46,11 +46,11 @@ function HomePage() {
 
 
       {/* Featured */}
-      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-        <div className="mb-10 flex items-end justify-between">
+      <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 sm:pb-16 lg:px-8">
+        <div className="mb-6 flex items-end justify-between sm:mb-10">
           <div>
             <p className="text-xs tracking-[0.3em] text-primary uppercase">Featured Edit</p>
-            <h2 className="mt-2 font-serif text-4xl font-medium sm:text-5xl">
+            <h2 className="mt-2 font-serif text-3xl font-medium sm:text-5xl">
               The Season's Loveliest
             </h2>
           </div>
@@ -69,23 +69,23 @@ function HomePage() {
       </section>
 
       {/* Editorial banner */}
-      <section className="mx-auto my-20 max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="bg-rose-gradient text-primary-foreground relative overflow-hidden rounded-3xl px-8 py-16 shadow-luxe sm:px-16 sm:py-20">
+      <section className="mx-auto my-10 max-w-7xl px-4 sm:my-20 sm:px-6 lg:px-8">
+        <div className="bg-rose-gradient text-primary-foreground relative overflow-hidden rounded-2xl px-5 py-10 shadow-luxe sm:rounded-3xl sm:px-16 sm:py-20">
           <div className="pointer-events-none absolute -top-20 -right-20 h-96 w-96 rounded-full bg-white/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-champagne/40 blur-3xl" />
           <div className="relative max-w-xl">
             <p className="text-[10px] tracking-[0.35em] uppercase opacity-80">Limited Edition</p>
-            <h3 className="mt-4 font-serif text-4xl leading-tight font-medium sm:text-5xl">
+            <h3 className="mt-4 font-serif text-3xl leading-tight font-medium sm:text-5xl">
               The Bridal Heirloom Collection
             </h3>
-            <p className="mt-4 text-base opacity-90">
+            <p className="mt-3 text-sm opacity-90 sm:mt-4 sm:text-base">
               Kundan, uncut polki and rose-gold pieces — designed to be the star of your
               once-in-a-lifetime moment.
             </p>
             <Link
               to="/products"
               search={{ category: "necklaces" }}
-              className="mt-8 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium tracking-wide text-primary shadow-luxe transition hover:scale-[1.02]"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-white px-7 py-3.5 text-sm font-medium tracking-wide text-primary shadow-luxe transition hover:scale-[1.02]"
             >
               Explore Collection <ArrowRight className="h-4 w-4" />
             </Link>
@@ -94,10 +94,10 @@ function HomePage() {
       </section>
 
       {/* Bestsellers */}
-      <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="mb-10 text-center">
+      <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 sm:pb-24 lg:px-8">
+        <div className="mb-6 text-center sm:mb-10">
           <p className="text-xs tracking-[0.3em] text-primary uppercase">Most Loved</p>
-          <h2 className="mt-2 font-serif text-4xl font-medium sm:text-5xl">Bestsellers</h2>
+          <h2 className="mt-2 font-serif text-3xl font-medium sm:text-5xl">Bestsellers</h2>
           <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
             Pieces our customers keep coming back for.
           </p>
@@ -110,11 +110,11 @@ function HomePage() {
       </section>
 
       {/* Reviews */}
-      <section className="bg-blush-gradient py-20">
+      <section className="bg-blush-gradient py-12 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-12 text-center">
+          <div className="mb-8 text-center sm:mb-12">
             <p className="text-xs tracking-[0.3em] text-primary uppercase">Kind Words</p>
-            <h2 className="mt-2 font-serif text-4xl font-medium sm:text-5xl">From Our Sisterhood</h2>
+            <h2 className="mt-2 font-serif text-3xl font-medium sm:text-5xl">From Our Sisterhood</h2>
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {[
@@ -133,7 +133,7 @@ function HomePage() {
             ].map((r) => (
               <div
                 key={r.name}
-                className="rounded-2xl border border-border/60 bg-background p-6 shadow-soft"
+                className="rounded-xl border border-border/60 bg-background p-4 shadow-soft sm:rounded-2xl sm:p-6"
               >
                 <div className="text-champagne mb-3 text-lg">★★★★★</div>
                 <p className="text-sm leading-relaxed text-charcoal/80">"{r.text}"</p>

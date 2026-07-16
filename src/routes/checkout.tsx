@@ -374,7 +374,7 @@ function CheckoutPage() {
                   <dd>-{formatINR(discount)}</dd>
                 </div>
 
-                <div className="flex justify-between text-sm text-green-600">
+                <div className="flex items-center justify-between text-sm text-green-600">
                   <dt>
                     • {coupon.code}{" "}
                     {coupon.discount_type === "percent"
@@ -382,7 +382,21 @@ function CheckoutPage() {
                       : `(₹${coupon.discount_value} OFF)`}
                   </dt>
 
-                  <dd>-{formatINR(discount)}</dd>
+                  <div className="flex items-center gap-3">
+                    <span>-{formatINR(discount)}</span>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCoupon(null);
+                        setCouponCode("");
+                        setDiscount(0);
+                      }}
+                      className="text-red-500 hover:underline"
+                    >
+                      Remove
+                    </button>
+                  </div>
                 </div>
               </>
             )}

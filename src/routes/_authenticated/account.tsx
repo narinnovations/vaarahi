@@ -35,24 +35,24 @@ function AccountPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <div className="mx-auto max-w-5xl px-3 py-6 sm:px-6 sm:py-10 lg:px-8">
+      <div className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="font-serif text-4xl font-medium">My Account</h1>
+          <h1 className="font-serif text-3xl font-medium sm:text-4xl">My Account</h1>
           <p className="text-sm text-muted-foreground">{user?.email}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           {isAdmin && (
             <Link
               to="/admin"
-              className="bg-charcoal text-pearl inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm"
+              className="bg-charcoal text-pearl inline-flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm sm:w-auto"
             >
               <ShieldCheck className="h-4 w-4" /> Admin Panel
             </Link>
           )}
           <button
             onClick={signOut}
-            className="inline-flex items-center gap-2 rounded-full border border-border px-5 py-2.5 text-sm"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-full border border-border px-5 py-3 text-sm sm:w-auto"
           >
             <LogOut className="h-4 w-4" /> Sign out
           </button>
@@ -72,16 +72,16 @@ function AccountPage() {
                 key={o.id}
                 to="/account/$id"
                 params={{ id: o.id }}
-                className="block rounded-xl border border-border/60 bg-background p-4 transition hover:border-primary hover:shadow-soft"
+                className="block rounded-2xl border border-border/60 bg-background p-4 sm:p-5 transition hover:border-primary hover:shadow-soft"
               >
-                <div className="flex flex-wrap items-center justify-between gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <div className="font-medium">Order {o.order_number}</div>
                     <div className="text-xs text-muted-foreground">
                       {new Date(o.created_at).toLocaleDateString("en-IN")} · <span className="capitalize">{o.status}</span>
                     </div>
                   </div>
-                  <div className="font-serif text-lg">{formatINR(o.total)}</div>
+                  <div className="font-serif text-xl sm:text-lg">{formatINR(o.total)}</div>
                 </div>
 
                 {o.status !== "cancelled" && (
@@ -93,7 +93,7 @@ function AccountPage() {
                 )}
 
                 {(o.tracking_number || o.courier_name || o.tracking_url || o.shipping_notes) && (
-                  <div className="mt-3 rounded-lg bg-blush/30 p-3 text-xs">
+                  <div className="mt-3 rounded-xl bg-blush/30 p-4 text-xs sm:text-sm">
                     {o.courier_name && (
                       <div><span className="text-muted-foreground">Courier:</span> <span className="font-medium">{o.courier_name}</span></div>
                     )}
@@ -144,28 +144,30 @@ function ShippingTimeline({
   const active = idx < 0 ? 0 : idx;
   return (
     <div className="mt-4">
-      <div className="flex items-center">
-        {STEPS.map((s, i) => {
-          const done = i <= active;
-          return (
-            <div key={s.key} className="flex flex-1 items-center last:flex-none">
-              <div className="flex flex-col items-center">
-                <div
-                  className={`grid h-8 w-8 place-items-center rounded-full border-2 ${done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground"
-                    }`}
-                >
-                  <s.Icon className="h-4 w-4" />
+      <div className="overflow-x-auto">
+        <div className="flex min-w-[520px] items-center">
+          {STEPS.map((s, i) => {
+            const done = i <= active;
+            return (
+              <div key={s.key} className="flex flex-1 items-center last:flex-none">
+                <div className="flex flex-col items-center">
+                  <div
+                    className={`grid h-8 w-8 place-items-center rounded-full border-2 ${done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-background text-muted-foreground"
+                      }`}
+                  >
+                    <s.Icon className="h-4 w-4" />
+                  </div>
+                  <div className={`mt-1 text-[10px] uppercase tracking-wider ${done ? "text-foreground font-medium" : "text-muted-foreground"}`}>
+                    {s.label}
+                  </div>
                 </div>
-                <div className={`mt-1 text-[10px] uppercase tracking-wider ${done ? "text-foreground font-medium" : "text-muted-foreground"}`}>
-                  {s.label}
-                </div>
+                {i < STEPS.length - 1 && (
+                  <div className={`mx-1 h-0.5 flex-1 ${i < active ? "bg-primary" : "bg-border"}`} />
+                )}
               </div>
-              {i < STEPS.length - 1 && (
-                <div className={`mx-1 h-0.5 flex-1 ${i < active ? "bg-primary" : "bg-border"}`} />
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
       {(dispatch || eta) && (
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
