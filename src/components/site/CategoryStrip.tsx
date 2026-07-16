@@ -32,7 +32,7 @@ export function CategoryStrip({ categories }: { categories: Category[] }) {
             search={{ category: c.slug }}
             className="group flex flex-col items-center shrink-0 snap-start"
           >
-            <div className="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 overflow-hidden rounded-full border border-rose-gold/30 shadow-soft transition duration-300 group-hover:shadow-luxe">
+            <div className="relative h-24 w-24 sm:h-28 sm:w-28 lg:h-32 lg:w-32 overflow-hidden rounded-full border border-rose-gold/30 shadow-soft transition duration-300 group-hover:shadow-luxe">
               <img
                 src={resolveImage(c.image_url)}
                 alt={c.name}

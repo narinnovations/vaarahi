@@ -79,12 +79,9 @@ export function HeroSlider() {
         relative
         overflow-hidden
 
-        h-[52vh]
-        min-h-[320px]
-        max-h-[500px]
+        h-[240px]
 
-        sm:h-[60vh]
-        sm:min-h-[420px]
+        sm:h-[380px]
 
         lg:h-[92vh]
         lg:min-h-[560px]
@@ -94,26 +91,24 @@ export function HeroSlider() {
       {slides.map((slide, i) => (
         <div
           key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ${
-            i === active
+          className={`absolute inset-0 transition-opacity duration-1000 ${i === active
               ? "opacity-100"
               : "pointer-events-none opacity-0"
-          }`}
+            }`}
         >
           <img
             src={slide.image_url}
             alt=""
             fetchPriority={i === 0 ? "high" : "low"}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover object-[35%_center] lg:object-center"
           />
 
           <div className="absolute inset-0 bg-gradient-to-r from-background/85 via-background/40 to-transparent" />
 
           <div className="relative z-10 mx-auto flex h-full max-w-7xl items-center px-5 sm:px-8 lg:px-10">
             <div
-              className={`max-w-xl ${
-                i === active ? "animate-fade-up" : ""
-              }`}
+              className={`max-w-xl ${i === active ? "animate-fade-up" : ""
+                }`}
             >
               {slide.eyebrow && (
                 <span
@@ -154,7 +149,7 @@ export function HeroSlider() {
                   leading-tight
                   text-charcoal
 
-                  text-3xl
+                  text-2xl
 
                   sm:text-5xl
 
@@ -228,11 +223,10 @@ export function HeroSlider() {
               key={i}
               onClick={() => setActive(i)}
               aria-label={`Slide ${i + 1}`}
-              className={`rounded-full transition-all ${
-                i === active
+              className={`rounded-full transition-all ${i === active
                   ? "bg-rose-gradient w-8 h-1.5 sm:w-10"
                   : "bg-charcoal/25 w-4 h-1.5 sm:w-5"
-              }`}
+                }`}
             />
           ))}
         </div>
