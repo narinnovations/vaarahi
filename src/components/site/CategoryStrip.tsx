@@ -24,15 +24,15 @@ export function CategoryStrip({ categories }: { categories: Category[] }) {
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 sm:gap-6 md:grid-cols-4 lg:grid-cols-7">
+      <div className="flex gap-6 overflow-x-auto scrollbar-hide pb-2 snap-x snap-mandatory">
         {categories.map((c) => (
           <Link
             key={c.slug}
             to="/products"
             search={{ category: c.slug }}
-            className="group flex flex-col items-center"
+            className="group flex flex-col items-center shrink-0 snap-start"
           >
-            <div className="relative h-36 w-36 overflow-hidden rounded-full border border-rose-gold/30 shadow-soft transition duration-300 group-hover:shadow-luxe sm:h-44 sm:w-44 lg:h-auto lg:w-full lg:aspect-square">
+            <div className="relative h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28 overflow-hidden rounded-full border border-rose-gold/30 shadow-soft transition duration-300 group-hover:shadow-luxe">
               <img
                 src={resolveImage(c.image_url)}
                 alt={c.name}
