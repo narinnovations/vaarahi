@@ -24,9 +24,15 @@ function CheckoutPage() {
   const { user } = useAuth();
   const [placed, setPlaced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [couponCode, setCouponCode] = useState("");
+  const [coupon, setCoupon] = useState<any>(null);
+  const [discount, setDiscount] = useState(0);
   const shipping = subtotal >= 999 || subtotal === 0 ? 0 : 79;
-  const total = subtotal + shipping;
 
+  const total = Math.max(
+    subtotal + shipping - discount,
+    0
+  );
   if (items.length === 0 && !placed) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
@@ -68,7 +74,47 @@ function CheckoutPage() {
       </div>
     );
   }
+  const applyCoupon = async () => {
 
+    if (!couponCode.trim()) {
+      toast.error("Enter coupon code");
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from("coupons")
+      .select("*")
+      .eq("code", couponCode.trim())
+      .eq("active", true)
+      .or("expires_at.is.null,expires_at.gt.now()")
+      .single();
+
+    if (error || !data) {
+      toast.error("Invalid coupon");
+      return;
+    }
+
+    if (subtotal < Number(data.min_order ?? 0)) {
+      toast.error(
+        `Minimum order should be ${formatINR(Number(data.min_order))}`
+      );
+      return;
+    }
+
+    let value = 0;
+
+    if (data.discount_type === "percent") {
+      value = subtotal * Number(data.discount_value) / 100;
+    } else {
+      value = Number(data.discount_value);
+    }
+
+    setCoupon(data);
+    setDiscount(value);
+
+    toast.success("Coupon applied successfully");
+
+  };
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
@@ -130,16 +176,22 @@ function CheckoutPage() {
         .insert({
           order_number: orderNumber,
           user_id: user.id,
+
           customer_name: String(fd.get("name") ?? ""),
           customer_email: String(fd.get("email") ?? user.email ?? ""),
           customer_phone: String(fd.get("phone") ?? ""),
+
           address_line1: String(fd.get("address") ?? ""),
           city: String(fd.get("city") ?? ""),
           state: String(fd.get("state") ?? ""),
           pincode: String(fd.get("pin") ?? ""),
+
           subtotal,
           shipping,
+          discount,
+          coupon_code: couponCode || null,
           total,
+
           payment_method: String(fd.get("pay") ?? "cod"),
           status: "pending",
           payment_status: "pending",
@@ -280,20 +332,73 @@ function CheckoutPage() {
               </li>
             ))}
           </ul>
+          {!coupon ? (
+            <div className="mt-4">
+              <label className="mb-2 block text-xs uppercase tracking-wider">
+                Coupon
+              </label>
 
+              <div className="flex gap-2">
+                <input
+                  value={couponCode}
+                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                  placeholder="Enter coupon code"
+                  className="flex-1 rounded-full border border-border px-4 py-3"
+                />
+
+                <button
+                  type="button"
+                  onClick={applyCoupon}
+                  className="rounded-full bg-primary px-6 text-white"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          ) : null}
           <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
               <dd>{formatINR(subtotal)}</dd>
             </div>
+
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Shipping</dt>
-              <dd>{shipping === 0 ? "Free" : formatINR(shipping)}</dd>
+              <dd>{shipping === 0 ? "FREE" : formatINR(shipping)}</dd>
             </div>
+
+            {coupon && (
+              <>
+                <div className="flex justify-between text-green-600 font-medium">
+                  <dt>Discount</dt>
+                  <dd>-{formatINR(discount)}</dd>
+                </div>
+
+                <div className="flex justify-between text-sm text-green-600">
+                  <dt>
+                    • {coupon.code}{" "}
+                    {coupon.discount_type === "percent"
+                      ? `(${coupon.discount_value}% OFF)`
+                      : `(₹${coupon.discount_value} OFF)`}
+                  </dt>
+
+                  <dd>-{formatINR(discount)}</dd>
+                </div>
+              </>
+            )}
+
             <div className="flex items-baseline justify-between border-t border-border pt-3 text-lg">
               <dt className="font-serif">Total</dt>
-              <dd className="font-serif font-semibold">{formatINR(total)}</dd>
+              <dd className="font-serif font-semibold">
+                {formatINR(total)}
+              </dd>
             </div>
+
+            {coupon && (
+              <div className="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+                ✅ You saved <strong>{formatINR(discount)}</strong> on this order!
+              </div>
+            )}
           </dl>
 
           <button

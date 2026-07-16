@@ -40,33 +40,127 @@ type NavItem = { to: string; icon: typeof Package; label: string; exact?: boolea
 type NavSection = { label?: string; items: NavItem[] };
 
 const nav: NavSection[] = [
-  { items: [{ to: "/admin", icon: LayoutDashboard, label: "Dashboard", exact: true }] },
-  { label: "Catalog", items: [
-    { to: "/admin/products", icon: Package, label: "Products" },
-    { to: "/admin/categories", icon: Package, label: "Categories" },
-    { to: "/admin/orders", icon: ShoppingBag, label: "Orders" },
-    { to: "/admin/coupons", icon: Ticket, label: "Coupons" },
-  ]},
-  { label: "Content", items: [
-    { to: "/admin/banners", icon: Images, label: "Hero Banners" },
-    { to: "/admin/reels", icon: Instagram, label: "Instagram Reels" },
-    { to: "/admin/policies", icon: FileText, label: "Policies & Pages" },
-    { to: "/admin/seo", icon: Search, label: "SEO" },
-  ]},
-  { label: "Operations", items: [
-    { to: "/admin/inventory", icon: Boxes, label: "Inventory" },
-    { to: "/admin/customers", icon: Users, label: "Customers" },
-    { to: "/admin/notifications", icon: Bell, label: "Notifications" },
-  ]},
-  { label: "Insights", items: [
-    { to: "/admin/reports", icon: BarChart3, label: "Reports" },
-    { to: "/admin/analytics", icon: LineChart, label: "Analytics" },
-  ]},
-  { label: "System", items: [
-    { to: "/admin/users", icon: UserCog, label: "Admin Users" },
-    { to: "/admin/logs", icon: ScrollText, label: "Activity Logs" },
-    { to: "/admin/settings", icon: SettingsIcon, label: "Store Settings" },
-  ]},
+  {
+    items: [
+      {
+        to: "/admin",
+        icon: LayoutDashboard,
+        label: "Dashboard",
+        exact: true,
+      },
+    ],
+  },
+
+  {
+    label: "Catalog",
+    items: [
+      {
+        to: "/admin/products",
+        icon: Package,
+        label: "Products",
+      },
+      {
+        to: "/admin/categories",
+        icon: Package,
+        label: "Categories",
+      },
+      {
+        to: "/admin/orders",
+        icon: ShoppingBag,
+        label: "Orders",
+      },
+      {
+        to: "/admin/coupons",
+        icon: Ticket,
+        label: "Coupons",
+      },
+    ],
+  },
+
+  {
+    label: "Content",
+    items: [
+      {
+        to: "/admin/banners",
+        icon: Images,
+        label: "Hero Banners",
+      },
+      {
+        to: "/admin/reels",
+        icon: Instagram,
+        label: "Instagram Reels",
+      },
+      {
+        to: "/admin/policies",
+        icon: FileText,
+        label: "Policies & Pages",
+      },
+      {
+        to: "/admin/seo",
+        icon: Search,
+        label: "SEO",
+      },
+    ],
+  },
+
+  {
+    label: "Operations",
+    items: [
+      {
+        to: "/admin/inventory",
+        icon: Boxes,
+        label: "Inventory",
+      },
+      {
+        to: "/admin/customers",
+        icon: Users,
+        label: "Customers",
+      },
+      {
+        to: "/admin/notifications",
+        icon: Bell,
+        label: "Notifications",
+      },
+    ],
+  },
+
+  {
+    label: "Insights",
+    items: [
+      {
+        to: "/admin/reports",
+        icon: BarChart3,
+        label: "Reports",
+      },
+      {
+        to: "/admin/analytics",
+        icon: LineChart,
+        label: "Analytics",
+      },
+    ],
+  },
+
+  {
+    label: "System",
+    items: [
+      {
+        to: "/admin/users",
+        icon: UserCog,
+        label: "Admin Users",
+      },
+      {
+        to: "/admin/logs",
+        icon: ScrollText,
+        label: "Activity Logs",
+      },
+     
+      {
+        to: "/admin/settings",
+        icon: SettingsIcon,
+        label: "Store Settings",
+      },
+    ],
+  },
 ];
 
 function AdminLayout() {
@@ -82,9 +176,8 @@ function AdminLayout() {
   return (
     <div className="flex min-h-screen bg-blush/20">
       <aside
-        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col overflow-y-auto border-r border-border/60 bg-background transition-transform lg:static lg:translate-x-0 ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-40 flex w-64 transform flex-col overflow-y-auto border-r border-border/60 bg-background transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-between border-b px-5 py-4">
           <Link to="/" className="flex items-center gap-2">
@@ -112,11 +205,10 @@ function AdminLayout() {
                 <Link
                   key={n.to}
                   to={n.to as never}
-                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${
-                    isActive(n.to, n.exact)
-                      ? "bg-rose-gradient text-primary-foreground shadow-soft"
-                      : "hover:bg-blush"
-                  }`}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition ${isActive(n.to, n.exact)
+                    ? "bg-rose-gradient text-primary-foreground shadow-soft"
+                    : "hover:bg-blush"
+                    }`}
                 >
                   <n.icon className="h-4 w-4" />
                   {n.label}
