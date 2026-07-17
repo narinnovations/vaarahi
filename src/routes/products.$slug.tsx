@@ -8,6 +8,7 @@ import { resolveImages } from "@/lib/images";
 import { discountPercent, formatINR } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { ProductCard } from "@/components/site/ProductCard";
+import { useBuyNow } from "@/lib/buy-now";
 
 export const Route = createFileRoute("/products/$slug")({
   component: ProductDetailPage,
@@ -35,6 +36,7 @@ function ProductDetailPage() {
     enabled: Boolean(product?.category_slug),
   });
   const { addItem } = useCart();
+  const { setItem } = useBuyNow();
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
 
@@ -228,19 +230,18 @@ function ProductDetailPage() {
               onClick={() => {
                 if (outOfStock) return;
 
-                addItem(
-                  {
-                    productId: product.id,
-                    slug: product.slug,
-                    name: product.name,
-                    price: product.price,
-                    image: product.images[0] ?? "",
-                  },
-                  qty,
-                );
+                setItem({
+                  productId: product.id,
+                  slug: product.slug,
+                  name: product.name,
+                  price: product.price,
+                  image: product.images[0] ?? "",
+                  quantity: qty,
+                });
 
                 navigate({ to: "/checkout" });
               }}
+              
               className={`flex-1 rounded-full px-8 py-4 text-sm tracking-wider uppercase shadow-luxe sm:flex-none ${outOfStock
                 ? "cursor-not-allowed bg-gray-300 text-gray-500"
                 : "bg-rose-gradient text-primary-foreground transition hover:scale-[1.02]"

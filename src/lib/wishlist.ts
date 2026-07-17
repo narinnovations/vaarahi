@@ -90,6 +90,7 @@ export function useWishlist() {
 
     return {
         wishlist,
+        wishlistCount: wishlist.length,
         loading,
         add,
         remove,

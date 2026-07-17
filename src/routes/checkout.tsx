@@ -7,6 +7,7 @@ import { useAuth } from "@/lib/auth";
 import { formatINR } from "@/lib/format";
 import { resolveImage } from "@/lib/images";
 import { supabase } from "@/integrations/supabase/client";
+import { useBuyNow } from "@/lib/buy-now";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -20,20 +21,30 @@ export const Route = createFileRoute("/checkout")({
 
 function CheckoutPage() {
   const navigate = useNavigate();
-  const { items, subtotal, clear } = useCart();
+  const { items, clear } = useCart();
+  const { item: buyNowItem, clear: clearBuyNow } = useBuyNow();
+  const checkoutItems = buyNowItem ? [buyNowItem] : items;
+
+  const checkoutSubtotal = checkoutItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
   const { user } = useAuth();
   const [placed, setPlaced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<any>(null);
   const [discount, setDiscount] = useState(0);
-  const shipping = subtotal >= 999 || subtotal === 0 ? 0 : 79;
+  const shipping =
+    checkoutSubtotal >= 999 || checkoutSubtotal === 0
+      ? 0
+      : 79;
 
   const total = Math.max(
-    subtotal + shipping - discount,
-    0
+    checkoutSubtotal + shipping - discount,
+    0,
   );
-  if (items.length === 0 && !placed) {
+  if (checkoutItems.length === 0 && !placed) {
     return (
       <div className="mx-auto max-w-lg px-4 py-24 text-center">
         <h1 className="font-serif text-3xl">Your bag is empty</h1>
@@ -94,7 +105,7 @@ function CheckoutPage() {
       return;
     }
 
-    if (subtotal < Number(data.min_order ?? 0)) {
+    if (checkoutSubtotal < Number(data.min_order ?? 0)) {
       toast.error(
         `Minimum order should be ${formatINR(Number(data.min_order))}`
       );
@@ -104,7 +115,10 @@ function CheckoutPage() {
     let value = 0;
 
     if (data.discount_type === "percent") {
-      value = subtotal * Number(data.discount_value) / 100;
+      value =
+        checkoutSubtotal *
+        Number(data.discount_value) /
+        100;
     } else {
       value = Number(data.discount_value);
     }
@@ -131,7 +145,9 @@ function CheckoutPage() {
       // Validate latest stock
       // ============================
 
-      const productIds = items.map(i => i.productId);
+      const productIds = checkoutItems.map(
+        (i) => i.productId,
+      );
 
       const { data: latestProducts, error: stockError } = await supabase
         .from("products")
@@ -140,7 +156,7 @@ function CheckoutPage() {
 
       if (stockError) throw stockError;
 
-      for (const cartItem of items) {
+      for (const cartItem of checkoutItems) {
 
         const dbProduct = latestProducts?.find(
           p => p.id === cartItem.productId
@@ -186,7 +202,7 @@ function CheckoutPage() {
           state: String(fd.get("state") ?? ""),
           pincode: String(fd.get("pin") ?? ""),
 
-          subtotal,
+          subtotal: checkoutSubtotal,
           shipping,
           discount,
           coupon_code: couponCode || null,
@@ -200,7 +216,7 @@ function CheckoutPage() {
         .single();
       if (error || !order) throw error ?? new Error("Failed to create order");
       const { error: itemsErr } = await supabase.from("order_items").insert(
-        items.map((i) => ({
+        checkoutItems.map((i) => ({
           order_id: order.id,
           product_id: i.productId,
           product_name: i.name,
@@ -215,7 +231,7 @@ function CheckoutPage() {
       // Reduce product stock
       // ============================
 
-      for (const cartItem of items) {
+      for (const cartItem of checkoutItems) {
         const { data: product, error: fetchError } = await supabase
           .from("products")
           .select("stock")
@@ -236,7 +252,12 @@ function CheckoutPage() {
         if (updateError) throw updateError;
       }
       toast.success("Order placed successfully");
-      clear();
+      if (buyNowItem) {
+        clearBuyNow();
+      } else {
+        clear();
+      }
+
       setPlaced(true);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Something went wrong");
@@ -315,7 +336,7 @@ function CheckoutPage() {
         <aside className="h-fit rounded-2xl border border-border/70 bg-blush/40 p-6 shadow-soft lg:sticky lg:top-32">
           <h2 className="font-serif text-xl font-medium">Your bag</h2>
           <ul className="mt-4 max-h-64 space-y-3 overflow-auto pr-1">
-            {items.map((item) => (
+            {checkoutItems.map((item) => (
               <li key={item.productId} className="flex items-center gap-3 text-sm">
                 <div className="bg-blush h-14 w-14 shrink-0 overflow-hidden rounded-lg">
                   <img
@@ -359,7 +380,7 @@ function CheckoutPage() {
           <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
             <div className="flex justify-between">
               <dt className="text-muted-foreground">Subtotal</dt>
-              <dd>{formatINR(subtotal)}</dd>
+              <dd>{formatINR(checkoutSubtotal)}</dd>
             </div>
 
             <div className="flex justify-between">

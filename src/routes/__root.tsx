@@ -18,6 +18,7 @@ import { Footer } from "../components/site/Footer";
 import { AnnouncementBar } from "../components/site/AnnouncementBar";
 import { WhatsAppFab } from "../components/site/WhatsAppFab";
 import { Toaster } from "../components/ui/sonner";
+import { BuyNowProvider } from "@/lib/buy-now";
 
 function NotFoundComponent() {
   return (
@@ -131,16 +132,18 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <CartProvider>
-          <div className="flex min-h-screen flex-col">
-            <AnnouncementBar />
-            <Header />
-            <main className="flex-1">
-              <Outlet />
-            </main>
-            <Footer />
-          </div>
-          <WhatsAppFab />
-          <Toaster position="top-right" richColors closeButton />
+          <BuyNowProvider>
+            <div className="flex min-h-screen flex-col">
+              <AnnouncementBar />
+              <Header />
+
+              <main className="flex-1">
+                <Outlet />
+              </main>
+
+              <Footer />
+            </div>
+          </BuyNowProvider>
         </CartProvider>
       </AuthProvider>
     </QueryClientProvider>

@@ -10,7 +10,12 @@ import { useWishlist } from "@/lib/wishlist";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
-  const { add, remove, isWishlisted } = useWishlist();
+  const {
+    add,
+    remove,
+    isWishlisted,
+    loading,
+  } = useWishlist();
   const imgs = resolveImages(product.images);
   const [hover, setHover] = useState(false);
 
@@ -72,6 +77,8 @@ export function ProductCard({ product }: { product: Product }) {
           onClick={async (e) => {
             e.preventDefault();
 
+            if (loading) return;
+
             if (isWishlisted(product.id)) {
               const ok = await remove(product.id);
 
@@ -94,9 +101,9 @@ export function ProductCard({ product }: { product: Product }) {
           aria-label="Add to wishlist"
         >
           <Heart
-            className={`h-4 w-4 ${isWishlisted(product.id)
-                ? "fill-red-500 text-red-500"
-                : ""
+            className={`h-4 w-4 transition-colors ${!loading && isWishlisted(product.id)
+              ? "fill-red-500 text-red-500"
+              : "text-muted-foreground"
               }`}
           />
         </button>
