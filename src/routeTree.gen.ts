@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as CheckoutRouteImport } from './routes/checkout'
@@ -55,6 +56,11 @@ import { Route as AuthenticatedAdminCustomersIdRouteImport } from './routes/_aut
 import { Route as AuthenticatedAdminCategoriesNewRouteImport } from './routes/_authenticated/admin/categories.new'
 import { Route as AuthenticatedAdminCategoriesIdRouteImport } from './routes/_authenticated/admin/categories.$id'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -314,6 +320,7 @@ export interface FileRoutesByFullPath {
   '/checkout': typeof CheckoutRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/wishlist': typeof WishlistRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/account': typeof AuthenticatedAccountRouteWithChildren
   '/policies/$slug': typeof PoliciesSlugRoute
@@ -360,6 +367,7 @@ export interface FileRoutesByTo {
   '/checkout': typeof CheckoutRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/wishlist': typeof WishlistRoute
   '/account': typeof AuthenticatedAccountRouteWithChildren
   '/policies/$slug': typeof PoliciesSlugRoute
   '/products/$slug': typeof ProductsSlugRoute
@@ -406,6 +414,7 @@ export interface FileRoutesById {
   '/checkout': typeof CheckoutRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/wishlist': typeof WishlistRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/account': typeof AuthenticatedAccountRouteWithChildren
   '/policies/$slug': typeof PoliciesSlugRoute
@@ -454,6 +463,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/forgot-password'
     | '/reset-password'
+    | '/wishlist'
     | '/admin'
     | '/account'
     | '/policies/$slug'
@@ -500,6 +510,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/forgot-password'
     | '/reset-password'
+    | '/wishlist'
     | '/account'
     | '/policies/$slug'
     | '/products/$slug'
@@ -545,6 +556,7 @@ export interface FileRouteTypes {
     | '/checkout'
     | '/forgot-password'
     | '/reset-password'
+    | '/wishlist'
     | '/_authenticated/admin'
     | '/_authenticated/account'
     | '/policies/$slug'
@@ -593,6 +605,7 @@ export interface RootRouteChildren {
   CheckoutRoute: typeof CheckoutRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
+  WishlistRoute: typeof WishlistRoute
   PoliciesSlugRoute: typeof PoliciesSlugRoute
   ProductsSlugRoute: typeof ProductsSlugRoute
   ProductsIndexRoute: typeof ProductsIndexRoute
@@ -601,6 +614,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -1097,6 +1117,7 @@ const rootRouteChildren: RootRouteChildren = {
   CheckoutRoute: CheckoutRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   ResetPasswordRoute: ResetPasswordRoute,
+  WishlistRoute: WishlistRoute,
   PoliciesSlugRoute: PoliciesSlugRoute,
   ProductsSlugRoute: ProductsSlugRoute,
   ProductsIndexRoute: ProductsIndexRoute,

@@ -58,7 +58,7 @@ export function Header() {
                 </Link>
               ))}
               <div className="my-3 h-px bg-border/60" />
-              <Link to="/account" onClick={close} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-blush">
+              <Link to="/wishlist" onClick={close} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-blush">
                 <Heart className="h-4 w-4" /> Wishlist
               </Link>
               <Link to="/cart" onClick={close} className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-blush">
@@ -137,7 +137,7 @@ export function Header() {
             <Search className="h-4.5 w-4.5 sm:h-5 sm:w-5"/>
           </button>
           <Link
-            to="/account"
+            to="/wishlist"
             className="inline-flex rounded-full p-2 hover:bg-blush"
             aria-label="Wishlist"
           >

@@ -6,9 +6,11 @@ import { discountPercent, formatINR } from "@/lib/format";
 import { resolveImages } from "@/lib/images";
 import type { Product } from "@/lib/queries";
 import { useState } from "react";
+import { useWishlist } from "@/lib/wishlist";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addItem } = useCart();
+  const { add, remove, isWishlisted } = useWishlist();
   const imgs = resolveImages(product.images);
   const [hover, setHover] = useState(false);
 
@@ -40,9 +42,8 @@ export function ProductCard({ product }: { product: Product }) {
             src={imgs[1]}
             alt=""
             aria-hidden
-            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-              hover ? "opacity-100" : "opacity-0"
-            }`}
+            className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${hover ? "opacity-100" : "opacity-0"
+              }`}
           />
         )}
 
@@ -68,14 +69,36 @@ export function ProductCard({ product }: { product: Product }) {
 
         <button
           type="button"
-          onClick={(e) => {
+          onClick={async (e) => {
             e.preventDefault();
-            toast.success("Added to wishlist");
+
+            if (isWishlisted(product.id)) {
+              const ok = await remove(product.id);
+
+              if (ok) {
+                toast.success("Removed from wishlist");
+              } else {
+                toast.error("Unable to remove");
+              }
+            } else {
+              const ok = await add(product.id);
+
+              if (ok) {
+                toast.success("Added to wishlist");
+              } else {
+                toast.error("Please login first");
+              }
+            }
           }}
           className="absolute top-2 right-2 grid h-8 w-8 place-items-center rounded-full bg-background/80 backdrop-blur transition hover:bg-background sm:top-3 sm:right-3 sm:h-9 sm:w-9"
           aria-label="Add to wishlist"
         >
-          <Heart className="h-4 w-4" />
+          <Heart
+            className={`h-4 w-4 ${isWishlisted(product.id)
+                ? "fill-red-500 text-red-500"
+                : ""
+              }`}
+          />
         </button>
       </Link>
 
