@@ -118,11 +118,11 @@ function WishlistPage() {
         <div className="mx-auto max-w-7xl px-4 py-8">
             <h1 className="mb-8 text-3xl font-serif">My Wishlist</h1>
 
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6">
                 {products.map((product) => (
                     <div
                         key={product.id}
-                        className="rounded-2xl border bg-card shadow-sm overflow-hidden"
+                        className="overflow-hidden rounded-xl border bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
                     >
                         <Link
                             to="/products/$slug"
@@ -131,20 +131,20 @@ function WishlistPage() {
                             <img
                                 src={resolveImage(product.images[0])}
                                 alt={product.name}
-                                className="aspect-square w-full object-cover"
+                                className="aspect-square w-full object-cover transition-transform duration-300 hover:scale-105"
                             />
                         </Link>
 
-                        <div className="p-4">
+                        <div className="p-3">
                             <Link
                                 to="/products/$slug"
                                 params={{ slug: product.slug }}
-                                className="font-medium hover:text-primary"
+                                className="line-clamp-2 text-sm font-medium hover:text-primary"
                             >
                                 {product.name}
                             </Link>
 
-                            <p className="mt-2 font-semibold">
+                            <p className="mt-1 text-base font-semibold text-primary">
                                 {formatINR(product.price)}
                             </p>
 
@@ -155,7 +155,7 @@ function WishlistPage() {
                                         prev.filter((p) => p.id !== product.id)
                                     );
                                 }}
-                                className="mt-4 w-full rounded-full border py-2 text-sm hover:bg-blush"
+                                className="mt-3 w-full rounded-full border py-1.5 text-xs transition-colors hover:bg-blush"
                             >
                                 Remove
                             </button>
