@@ -6,6 +6,7 @@ import { CategoryStrip } from "@/components/site/CategoryStrip";
 import { ProductCard } from "@/components/site/ProductCard";
 import { InstagramReels } from "@/components/site/InstagramReels";
 import { categoriesQuery, productsQuery } from "@/lib/queries";
+import { TrustStrip } from "@/components/site/TrustStrip";
 import {
   ArrowRight,
   ArrowLeft,
@@ -49,27 +50,7 @@ function HomePage() {
 
       <HeroSlider />
 
-      {/* Trust strip */}
-      <section className="border-b border-border/60 bg-blush/40">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 px-4 py-6 sm:grid-cols-4 sm:gap-6 sm:px-6 sm:py-10">
-          {[
-            { Icon: Gem, title: "Handcrafted", copy: "In small batches" },
-            { Icon: Award, title: "BIS Hallmark", copy: "Where applicable" },
-            { Icon: Truck, title: "Free Shipping", copy: "Orders above ₹999" },
-            { Icon: Sparkles, title: "Easy Returns", copy: "7-day happiness" },
-          ].map((t) => (
-            <div key={t.title} className="flex items-center gap-3">
-              <div className="bg-rose-gradient text-primary-foreground grid h-9 w-9 shrink-0 place-items-center rounded-full shadow-soft sm:h-11 sm:w-11">
-                <t.Icon className="h-5 w-5" />
-              </div>
-              <div className="min-w-0">
-                <div className="font-serif text-base leading-tight font-medium sm:text-lg">{t.title}</div>
-                <div className="text-[11px] text-muted-foreground sm:text-xs">{t.copy}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      
 
 
       {/* Featured */}
