@@ -79,7 +79,7 @@ export function InstagramReels() {
         {reels.map((r) => (
           <div
             key={r.id}
-            className="w-[38vw] min-w-[150px] max-w-[220px] flex-shrink-0"
+            className="w-[60vw] min-w-[220px] max-w-[280px] flex-shrink-0"
           >
             <a
               href={r.reel_url}
