@@ -114,7 +114,7 @@ function HomePage() {
           {featured.map((p) => (
             <div
               key={p.id}
-              className="min-w-[280px] max-w-[280px] flex-shrink-0"
+              className="w-[45vw] min-w-[170px] max-w-[280px] flex-shrink-0"
             >
               <ProductCard product={p} />
             </div>
@@ -188,7 +188,7 @@ function HomePage() {
           {bestsellers.map((p) => (
             <div
               key={p.id}
-              className="min-w-[280px] max-w-[280px] flex-shrink-0"
+              className="w-[45vw] min-w-[170px] max-w-[280px] flex-shrink-0"
             >
               <ProductCard product={p} />
             </div>
