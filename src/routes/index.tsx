@@ -49,8 +49,8 @@ function HomePage() {
       <CategoryStrip categories={categories} />
 
       <HeroSlider />
+      <TrustStrip />
 
-      
 
 
       {/* Featured */}
