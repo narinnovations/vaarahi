@@ -1,11 +1,20 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { CategoryStrip } from "@/components/site/CategoryStrip";
 import { ProductCard } from "@/components/site/ProductCard";
 import { InstagramReels } from "@/components/site/InstagramReels";
 import { categoriesQuery, productsQuery } from "@/lib/queries";
-import { ArrowRight, Award, Gem, Sparkles, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowLeft,
+  ChevronRight,
+  Award,
+  Gem,
+  Sparkles,
+  Truck,
+} from "lucide-react";
 
 export const Route = createFileRoute("/")({
   component: HomePage,
@@ -13,8 +22,26 @@ export const Route = createFileRoute("/")({
 
 function HomePage() {
   const { data: categories = [] } = useQuery(categoriesQuery());
-  const { data: featured = [] } = useQuery(productsQuery({ featured: true, limit: 8 }));
+  const { data: featured = [] } = useQuery(
+    productsQuery({ featured: true })
+  );
   const { data: bestsellers = [] } = useQuery(productsQuery({ bestseller: true, limit: 4 }));
+  const bestSellerRef = useRef<HTMLDivElement>(null);
+  const featuredRef = useRef<HTMLDivElement>(null);
+
+  const scrollFeatured = (dir: "left" | "right") => {
+    featuredRef.current?.scrollBy({
+      left: dir === "left" ? -420 : 420,
+      behavior: "smooth",
+    });
+  };
+
+  const scrollBestSeller = (dir: "left" | "right") => {
+    bestSellerRef.current?.scrollBy({
+      left: dir === "left" ? -420 : 420,
+      behavior: "smooth",
+    });
+  };
 
   return (
     <div>
@@ -54,16 +81,43 @@ function HomePage() {
               The Season's Loveliest
             </h2>
           </div>
-          <Link
-            to="/products"
-            className="hidden items-center gap-1 text-sm text-primary hover:underline sm:inline-flex"
-          >
-            Shop all <ArrowRight className="h-4 w-4" />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/products"
+              className="hidden items-center gap-1 text-sm text-primary hover:underline sm:inline-flex"
+            >
+              Shop all <ArrowRight className="h-4 w-4" />
+            </Link>
+
+            <button
+              onClick={() => scrollFeatured("left")}
+              className="hidden rounded-full border p-2 hover:bg-blush md:block"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={() => scrollFeatured("right")}
+              className="hidden rounded-full border p-2 hover:bg-blush md:block"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">
+        <div
+          ref={featuredRef}
+          className="flex gap-6 overflow-x-auto scroll-smooth pb-4
+             [-ms-overflow-style:none]
+             [scrollbar-width:none]
+             [&::-webkit-scrollbar]:hidden"
+        >
           {featured.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <div
+              key={p.id}
+              className="min-w-[280px] max-w-[280px] flex-shrink-0"
+            >
+              <ProductCard product={p} />
+            </div>
           ))}
         </div>
       </section>
@@ -95,16 +149,49 @@ function HomePage() {
 
       {/* Bestsellers */}
       <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 sm:pb-24 lg:px-8">
-        <div className="mb-6 text-center sm:mb-10">
-          <p className="text-xs tracking-[0.3em] text-primary uppercase">Most Loved</p>
-          <h2 className="mt-2 font-serif text-3xl font-medium sm:text-5xl">Bestsellers</h2>
-          <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-            Pieces our customers keep coming back for.
-          </p>
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.3em] text-primary">
+              Most Loved
+            </p>
+
+            <h2 className="mt-2 font-serif text-3xl font-medium sm:text-5xl">
+              Bestsellers
+            </h2>
+
+            <p className="mt-3 max-w-lg text-sm text-muted-foreground">
+              Pieces our customers keep coming back for.
+            </p>
+          </div>
+
+          <div className="hidden gap-2 md:flex">
+            <button
+              onClick={() => scrollBestSeller("left")}
+              className="rounded-full border p-2 transition hover:bg-blush"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+
+            <button
+              onClick={() => scrollBestSeller("right")}
+              className="rounded-full border p-2 transition hover:bg-blush"
+            >
+              <ChevronRight className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-4">
+
+        <div
+          ref={bestSellerRef}
+          className="flex gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
           {bestsellers.map((p) => (
-            <ProductCard key={p.id} product={p} />
+            <div
+              key={p.id}
+              className="min-w-[280px] max-w-[280px] flex-shrink-0"
+            >
+              <ProductCard product={p} />
+            </div>
           ))}
         </div>
       </section>

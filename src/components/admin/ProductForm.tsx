@@ -13,6 +13,8 @@ export type ProductInput = {
   price: number;
   original_price: number | null;
   stock: number;
+  rating: number;
+  review_count: number;
   images: string[];
   is_new: boolean;
   is_bestseller: boolean;
@@ -45,6 +47,8 @@ export function ProductForm({
     price: 0,
     original_price: null,
     stock: 0,
+    rating: 4.5,
+    review_count: 0,
     images: [],
     is_new: false,
     is_bestseller: false,
@@ -242,6 +246,27 @@ export function ProductForm({
 
       <div className="space-y-6">
         <Card title="Pricing & Stock">
+          <Field label="Product Rating">
+            <input
+              type="number"
+              min={0}
+              max={5}
+              step={0.1}
+              className="input"
+              value={f.rating}
+              onChange={(e) => set("rating", Number(e.target.value))}
+            />
+          </Field>
+
+          <Field label="Review Count">
+            <input
+              type="number"
+              min={0}
+              className="input"
+              value={f.review_count}
+              onChange={(e) => set("review_count", Number(e.target.value))}
+            />
+          </Field>
           <Field label="Selling price (₹)">
             <input
               type="number"

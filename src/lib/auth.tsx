@@ -21,6 +21,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => {
       setSession(s);
+
       if (s?.user) {
         // defer role fetch to avoid deadlocks
         setTimeout(() => fetchRoles(s.user.id), 0);
@@ -28,16 +29,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles([]);
       }
     });
+
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session);
-      if (data.session?.user) fetchRoles(data.session.user.id);
+
+      if (data.session?.user) {
+        fetchRoles(data.session.user.id);
+      }
+
       setLoading(false);
     });
+
     return () => sub.subscription.unsubscribe();
   }, []);
 
   async function fetchRoles(uid: string) {
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", uid);
+    const { data } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", uid);
+
     setRoles((data ?? []).map((r) => r.role));
   }
 
@@ -45,20 +56,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading,
     session,
     user: session?.user ?? null,
-    isAdmin: roles.includes("admin") || roles.includes("super_admin"),
-    isSuperAdmin: roles.includes("super_admin"),
+
+    isAdmin:
+      roles.includes("admin") ||
+      roles.includes("super_admin"),
+
+    isSuperAdmin:
+      roles.includes("super_admin"),
+
     signOut: async () => {
       await supabase.auth.signOut();
       setRoles([]);
     },
   };
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  return (
+    <Ctx.Provider value={value}>
+      {children}
+    </Ctx.Provider>
+  );
 }
 
 export function useAuth() {
   const ctx = useContext(Ctx);
-  if (!ctx)
+
+  if (!ctx) {
     return {
       loading: true,
       session: null,
@@ -67,5 +89,7 @@ export function useAuth() {
       isSuperAdmin: false,
       signOut: async () => {},
     } satisfies AuthState;
+  }
+
   return ctx;
 }

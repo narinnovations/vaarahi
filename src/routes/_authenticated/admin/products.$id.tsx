@@ -35,6 +35,10 @@ function EditProduct() {
         price: p.price,
         original_price: p.original_price,
         stock: p.stock,
+
+        rating: p.rating,
+        review_count: p.review_count,
+
         images: p.images,
         is_new: p.is_new,
         is_bestseller: p.is_bestseller,
@@ -67,6 +71,8 @@ function EditProduct() {
           price: Number(data.price),
           original_price: data.original_price === null ? null : Number(data.original_price),
           stock: data.stock,
+          rating: Number(data.rating),
+          review_count: data.review_count,
           images: data.images ?? [],
           is_new: data.is_new,
           is_bestseller: data.is_bestseller,

@@ -20,6 +20,10 @@ function NewProduct() {
       price: p.price,
       original_price: p.original_price,
       stock: p.stock,
+
+      rating: p.rating,
+      review_count: p.review_count,
+
       images: p.images,
       is_new: p.is_new,
       is_bestseller: p.is_bestseller,
