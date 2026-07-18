@@ -4,33 +4,62 @@ export type DatePreset = "today" | "7d" | "30d" | "month" | "year" | "custom";
 
 export type DateRange = { start: string; end: string };
 
-export function rangeFromPreset(preset: DatePreset, custom?: DateRange): DateRange {
-  const end = new Date();
+export function rangeFromPreset(
+  preset: DatePreset,
+  custom?: DateRange,
+): DateRange {
   const start = new Date();
+  const end = new Date();
+
   switch (preset) {
     case "today":
       start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
       break;
+
     case "7d":
-      start.setDate(end.getDate() - 6);
+      start.setDate(start.getDate() - 6);
       start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
       break;
+
     case "30d":
-      start.setDate(end.getDate() - 29);
+      start.setDate(start.getDate() - 29);
       start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
       break;
+
     case "month":
       start.setDate(1);
       start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
       break;
+
     case "year":
       start.setMonth(0, 1);
       start.setHours(0, 0, 0, 0);
+      end.setHours(23, 59, 59, 999);
       break;
+
     case "custom":
-      if (custom) return custom;
+      if (custom) {
+        const s = new Date(custom.start);
+        const e = new Date(custom.end);
+
+        s.setHours(0, 0, 0, 0);
+        e.setHours(23, 59, 59, 999);
+
+        return {
+          start: s.toISOString(),
+          end: e.toISOString(),
+        };
+      }
   }
-  return { start: start.toISOString(), end: end.toISOString() };
+
+  return {
+    start: start.toISOString(),
+    end: end.toISOString(),
+  };
 }
 
 export function DateRangePicker({
@@ -58,9 +87,8 @@ export function DateRangePicker({
           <button
             key={p.k}
             onClick={() => onChange({ preset: p.k, custom: p.k === "custom" ? custom : undefined })}
-            className={`rounded-full px-3 py-1 text-xs transition ${
-              value.preset === p.k ? "bg-rose-gradient text-primary-foreground" : "hover:bg-blush"
-            }`}
+            className={`rounded-full px-3 py-1 text-xs transition ${value.preset === p.k ? "bg-rose-gradient text-primary-foreground" : "hover:bg-blush"
+              }`}
           >
             {p.label}
           </button>

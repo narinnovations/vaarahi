@@ -19,6 +19,8 @@ import { AnnouncementBar } from "../components/site/AnnouncementBar";
 import { WhatsAppFab } from "../components/site/WhatsAppFab";
 import { Toaster } from "../components/ui/sonner";
 import { BuyNowProvider } from "@/lib/buy-now";
+import { useRouterState } from "@tanstack/react-router";
+import { recordPageView } from "@/lib/log";
 
 function NotFoundComponent() {
   return (
@@ -127,6 +129,13 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({
+    select: (state) => state.location.pathname,
+  });
+
+  useEffect(() => {
+    recordPageView(pathname);
+  }, [pathname]);
 
   return (
     <QueryClientProvider client={queryClient}>
