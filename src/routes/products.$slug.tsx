@@ -141,7 +141,14 @@ function ProductDetailPage() {
   const displayPrice = selectedVariant?.price ?? product.price;
   const displayStock = selectedVariant?.stock ?? product.stock;
   const outOfStock = displayStock <= 0;
-
+  const hasProductDetails =
+    !!selectedVariant?.color ||
+    !!selectedVariant?.weight ||
+    !!selectedVariant?.material ||
+    !!selectedVariant?.purity ||
+    !!selectedVariant?.finish ||
+    !!selectedVariant?.style ||
+    !!selectedVariant?.occasion;
 
   const discount = discountPercent(
     displayPrice,
@@ -283,64 +290,7 @@ function ProductDetailPage() {
 
           <p className="mt-6 leading-relaxed text-charcoal/80">{product.description}</p>
 
-          <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
-            <h3 className="mb-3 text-base font-semibold">
-              Product Details
-            </h3>
 
-            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
-
-              {selectedVariant?.color && (
-                <div>
-                  <p className="text-muted-foreground">Color</p>
-                  <p className="font-medium">{selectedVariant.color}</p>
-                </div>
-              )}
-
-              {selectedVariant?.weight && (
-                <div>
-                  <p className="text-muted-foreground">Weight</p>
-                  <p className="font-medium">{selectedVariant.weight} g</p>
-                </div>
-              )}
-
-              {selectedVariant?.material && (
-                <div>
-                  <p className="text-muted-foreground">Material</p>
-                  <p className="font-medium">{selectedVariant.material}</p>
-                </div>
-              )}
-
-              {selectedVariant?.purity && (
-                <div>
-                  <p className="text-muted-foreground">Purity</p>
-                  <p className="font-medium">{selectedVariant.purity}</p>
-                </div>
-              )}
-
-              {selectedVariant?.finish && (
-                <div>
-                  <p className="text-muted-foreground">Finish</p>
-                  <p className="font-medium">{selectedVariant.finish}</p>
-                </div>
-              )}
-
-              {selectedVariant?.style && (
-                <div>
-                  <p className="text-muted-foreground">Style</p>
-                  <p className="font-medium">{selectedVariant.style}</p>
-                </div>
-              )}
-
-              {selectedVariant?.occasion && (
-                <div>
-                  <p className="text-muted-foreground">Occasion</p>
-                  <p className="font-medium">{selectedVariant.occasion}</p>
-                </div>
-              )}
-
-            </div>
-          </div>
 
           <div className="mt-8 flex items-center gap-4">
             <div className="flex items-center rounded-full border border-border">
@@ -481,6 +431,66 @@ function ProductDetailPage() {
           </div>
         </div>
       </div>
+                {hasProductDetails && (
+            <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
+              <h3 className="mb-3 text-base font-semibold">
+                Product Details
+              </h3>
+
+              <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+
+                {selectedVariant?.color && (
+                  <div>
+                    <p className="text-muted-foreground">Color</p>
+                    <p className="font-medium">{selectedVariant.color}</p>
+                  </div>
+                )}
+
+                {selectedVariant?.weight && (
+                  <div>
+                    <p className="text-muted-foreground">Weight</p>
+                    <p className="font-medium">{selectedVariant.weight} g</p>
+                  </div>
+                )}
+
+                {selectedVariant?.material && (
+                  <div>
+                    <p className="text-muted-foreground">Material</p>
+                    <p className="font-medium">{selectedVariant.material}</p>
+                  </div>
+                )}
+
+                {selectedVariant?.purity && (
+                  <div>
+                    <p className="text-muted-foreground">Purity</p>
+                    <p className="font-medium">{selectedVariant.purity}</p>
+                  </div>
+                )}
+
+                {selectedVariant?.finish && (
+                  <div>
+                    <p className="text-muted-foreground">Finish</p>
+                    <p className="font-medium">{selectedVariant.finish}</p>
+                  </div>
+                )}
+
+                {selectedVariant?.style && (
+                  <div>
+                    <p className="text-muted-foreground">Style</p>
+                    <p className="font-medium">{selectedVariant.style}</p>
+                  </div>
+                )}
+
+                {selectedVariant?.occasion && (
+                  <div>
+                    <p className="text-muted-foreground">Occasion</p>
+                    <p className="font-medium">{selectedVariant.occasion}</p>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          )}
 
       {filtered.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">

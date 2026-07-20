@@ -27,22 +27,7 @@ function HomePage() {
     productsQuery({ featured: true })
   );
   const { data: bestsellers = [] } = useQuery(productsQuery({ bestseller: true, limit: 4 }));
-  const bestSellerRef = useRef<HTMLDivElement>(null);
-  const featuredRef = useRef<HTMLDivElement>(null);
 
-  const scrollFeatured = (dir: "left" | "right") => {
-    featuredRef.current?.scrollBy({
-      left: dir === "left" ? -420 : 420,
-      behavior: "smooth",
-    });
-  };
-
-  const scrollBestSeller = (dir: "left" | "right") => {
-    bestSellerRef.current?.scrollBy({
-      left: dir === "left" ? -420 : 420,
-      behavior: "smooth",
-    });
-  };
 
   return (
     <div>
@@ -62,44 +47,21 @@ function HomePage() {
               The Season's Loveliest
             </h2>
           </div>
-          <div className="flex items-center gap-3">
-            <Link
-              to="/products"
-              className="hidden items-center gap-1 text-sm text-primary hover:underline sm:inline-flex"
-            >
-              Shop all <ArrowRight className="h-4 w-4" />
-            </Link>
 
-            <button
-              onClick={() => scrollFeatured("left")}
-              className="hidden rounded-full border p-2 hover:bg-blush md:block"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-
-            <button
-              onClick={() => scrollFeatured("right")}
-              className="hidden rounded-full border p-2 hover:bg-blush md:block"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
         </div>
-        <div
-          ref={featuredRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth pb-4
-             [-ms-overflow-style:none]
-             [scrollbar-width:none]
-             [&::-webkit-scrollbar]:hidden"
-        >
-          {featured.map((p) => (
-            <div
-              key={p.id}
-              className="w-[45vw] min-w-[170px] max-w-[280px] flex-shrink-0"
-            >
-              <ProductCard product={p} />
-            </div>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {featured.slice(0, 8).map((p) => (
+            <ProductCard key={p.id} product={p} />
           ))}
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            to="/products"
+            className="rounded-full border border-primary px-8 py-3 text-sm font-medium transition hover:bg-primary hover:text-white"
+          >
+            View All
+          </Link>
         </div>
       </section>
 
@@ -144,36 +106,21 @@ function HomePage() {
               Pieces our customers keep coming back for.
             </p>
           </div>
-
-          <div className="hidden gap-2 md:flex">
-            <button
-              onClick={() => scrollBestSeller("left")}
-              className="rounded-full border p-2 transition hover:bg-blush"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-
-            <button
-              onClick={() => scrollBestSeller("right")}
-              className="rounded-full border p-2 transition hover:bg-blush"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
-          </div>
         </div>
 
-        <div
-          ref={bestSellerRef}
-          className="flex gap-6 overflow-x-auto scroll-smooth pb-4 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-        >
-          {bestsellers.map((p) => (
-            <div
-              key={p.id}
-              className="w-[45vw] min-w-[170px] max-w-[280px] flex-shrink-0"
-            >
-              <ProductCard product={p} />
-            </div>
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {bestsellers.slice(0, 8).map((p) => (
+            <ProductCard key={p.id} product={p} />
           ))}
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            to="/products"
+            className="rounded-full border border-primary px-8 py-3 text-sm font-medium transition hover:bg-primary hover:text-white"
+          >
+            View All
+          </Link>
         </div>
       </section>
 
