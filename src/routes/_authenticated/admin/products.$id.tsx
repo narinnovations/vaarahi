@@ -12,12 +12,30 @@ function EditProduct() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
+
+
   const { data, isLoading } = useQuery({
     queryKey: ["admin-product", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("*").eq("id", id).maybeSingle();
+      const { data: product, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
       if (error) throw error;
-      return data;
+
+      const { data: variants, error: variantError } = await supabase
+        .from("product_variants")
+        .select("*")
+        .eq("product_id", id);
+
+      if (variantError) throw variantError;
+
+      return {
+        ...product,
+        variants: variants ?? [],
+      };
     },
   });
 
@@ -44,11 +62,52 @@ function EditProduct() {
         is_bestseller: p.is_bestseller,
         is_featured: p.is_featured,
         tags: p.tags,
+
+        gst_enabled: p.gst_enabled,
+        gst_rate: p.gst_rate,
       })
       .eq("id", id);
     if (error) {
       toast.error(error.message);
       return;
+    }
+    // Delete old variants
+    const { error: deleteError } = await supabase
+      .from("product_variants")
+      .delete()
+      .eq("product_id", id);
+
+    if (deleteError) {
+      toast.error(deleteError.message);
+      return;
+    }
+
+    // Insert current variants
+    if (p.variants.length > 0) {
+      const { error: variantError } = await supabase
+        .from("product_variants")
+        .insert(
+          p.variants.map((v) => ({
+            product_id: id,
+            color: v.color,
+            size: v.size,
+            weight: v.weight,
+            material: v.material,
+            purity: v.purity,
+            finish: v.finish,
+            occasion: v.occasion,
+            style: v.style,
+            sku: v.sku,
+            price: v.price,
+            stock: v.stock,
+            images: v.images,
+          }))
+        );
+
+      if (variantError) {
+        toast.error(variantError.message);
+        return;
+      }
     }
     await qc.invalidateQueries({ queryKey: ["products"] });
     await qc.invalidateQueries({ queryKey: ["admin-products"] });
@@ -78,6 +137,24 @@ function EditProduct() {
           is_bestseller: data.is_bestseller,
           is_featured: data.is_featured,
           tags: data.tags ?? [],
+
+          gst_enabled: data.gst_enabled,
+          gst_rate: Number(data.gst_rate),
+          variants: (data.variants ?? []).map((v: any) => ({
+            id: v.id,
+            color: v.color ?? "",
+            size: v.size ?? "",
+            weight: v.weight ?? "",
+            material: v.material ?? "",
+            purity: v.purity ?? "",
+            finish: v.finish ?? "",
+            occasion: v.occasion ?? "",
+            style: v.style ?? "",
+            sku: v.sku ?? "",
+            price: v.price,
+            stock: v.stock ?? 0,
+            images: v.images ?? [],
+          })),
         }}
       />
     </div>

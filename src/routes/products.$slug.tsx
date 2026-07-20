@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Heart, ShieldCheck, Star, Truck, RotateCcw, Share2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { productBySlugQuery, productsQuery } from "@/lib/queries";
@@ -39,6 +39,44 @@ function ProductDetailPage() {
   const { setItem } = useBuyNow();
   const [activeImg, setActiveImg] = useState(0);
   const [qty, setQty] = useState(1);
+  const [selectedColor, setSelectedColor] = useState("");
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedWeight, setSelectedWeight] = useState("");
+  const colors = useMemo(() => {
+    return [
+      ...new Set(
+        (product?.variants ?? [])
+          .map((v) => v.color)
+          .filter((v): v is string => Boolean(v))
+      ),
+    ];
+  }, [product?.variants]);
+
+  const sizes = useMemo(() => {
+    return [
+      ...new Set(
+        (product?.variants ?? [])
+          .filter((v) => !selectedColor || v.color === selectedColor)
+          .map((v) => v.size)
+          .filter((v): v is string => Boolean(v))
+      ),
+    ];
+  }, [product?.variants, selectedColor]);
+
+  const weights = useMemo(() => {
+    return [
+      ...new Set(
+        (product?.variants ?? [])
+          .filter(
+            (v) =>
+              (!selectedColor || v.color === selectedColor) &&
+              (!selectedSize || v.size === selectedSize)
+          )
+          .map((v) => v.weight)
+          .filter((v): v is string => Boolean(v))
+      ),
+    ];
+  }, [product?.variants, selectedColor, selectedSize]);
 
   if (isLoading) {
     return (
@@ -65,9 +103,29 @@ function ProductDetailPage() {
   }
 
   const imgs = resolveImages(product.images);
-  const discount = discountPercent(product.price, product.original_price);
+
   const filtered = related.filter((r) => r.id !== product.id).slice(0, 4);
-  const outOfStock = product.stock <= 0;
+  const totalStock =
+    product.variants?.length
+      ? product.variants.reduce((sum, v) => sum + v.stock, 0)
+      : product.stock;
+
+
+
+
+  const selectedVariant =
+    product.variants.find((v) => v.size === selectedSize) ??
+    product.variants[0] ??
+    null;
+  const displayPrice = selectedVariant?.price ?? product.price;
+  const displayStock = selectedVariant?.stock ?? product.stock;
+  const outOfStock = displayStock <= 0;
+
+
+  const discount = discountPercent(
+    displayPrice,
+    product.original_price
+  );
 
   return (
     <div>
@@ -100,12 +158,14 @@ function ProductDetailPage() {
             )}
           </div>
           {imgs.length > 1 && (
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex gap-3 overflow-x-auto whitespace-nowrap pb-2">
               {imgs.map((src, i) => (
                 <button
                   key={i}
                   onClick={() => setActiveImg(i)}
-                  className={`aspect-square w-20 overflow-hidden rounded-xl border-2 transition ${i === activeImg ? "border-primary" : "border-transparent opacity-60"
+                  className={`aspect-square w-20 min-w-[80px] flex-shrink-0 overflow-hidden rounded-xl border-2 transition ${i === activeImg
+                    ? "border-primary"
+                    : "border-transparent opacity-60"
                     }`}
                 >
                   <img src={src} alt="" className="h-full w-full object-cover" />
@@ -134,9 +194,41 @@ function ProductDetailPage() {
             <span className="font-medium">{product.rating.toFixed(1)}</span>
             <span className="text-muted-foreground">· {product.review_count} reviews</span>
           </div>
+          {product.variants.length > 0 && (
+            <div className="mt-8 space-y-6">
 
+
+
+              {sizes.length > 0 && (
+                <div>
+                  <h3 className="mb-3 font-medium">Size</h3>
+
+                  <div className="flex flex-wrap gap-2">
+                    {sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => {
+                          setSelectedSize(size);
+                          setSelectedWeight("");
+                        }}
+                        className={`rounded-full border px-5 py-2 transition ${selectedSize === size
+                          ? "bg-primary text-white border-primary"
+                          : "bg-white hover:border-primary"
+                          }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+
+
+            </div>
+          )}
           <div className="mt-6 flex items-baseline gap-3">
-            <span className="font-serif text-4xl font-semibold">{formatINR(product.price)}</span>
+            <span className="font-serif text-4xl font-semibold">{formatINR(displayPrice)}</span>
             {product.original_price && (
               <>
                 <span className="text-lg text-muted-foreground line-through">
@@ -154,6 +246,65 @@ function ProductDetailPage() {
 
           <p className="mt-6 leading-relaxed text-charcoal/80">{product.description}</p>
 
+          <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
+            <h3 className="mb-3 text-base font-semibold">
+              Product Highlights
+            </h3>
+
+            <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+
+              {selectedVariant?.color && (
+                <div>
+                  <p className="text-muted-foreground">Color</p>
+                  <p className="font-medium">{selectedVariant.color}</p>
+                </div>
+              )}
+
+              {selectedVariant?.weight && (
+                <div>
+                  <p className="text-muted-foreground">Weight</p>
+                  <p className="font-medium">{selectedVariant.weight} g</p>
+                </div>
+              )}
+
+              {selectedVariant?.material && (
+                <div>
+                  <p className="text-muted-foreground">Material</p>
+                  <p className="font-medium">{selectedVariant.material}</p>
+                </div>
+              )}
+
+              {selectedVariant?.purity && (
+                <div>
+                  <p className="text-muted-foreground">Purity</p>
+                  <p className="font-medium">{selectedVariant.purity}</p>
+                </div>
+              )}
+
+              {selectedVariant?.finish && (
+                <div>
+                  <p className="text-muted-foreground">Finish</p>
+                  <p className="font-medium">{selectedVariant.finish}</p>
+                </div>
+              )}
+
+              {selectedVariant?.style && (
+                <div>
+                  <p className="text-muted-foreground">Style</p>
+                  <p className="font-medium">{selectedVariant.style}</p>
+                </div>
+              )}
+
+              {selectedVariant?.occasion && (
+                <div>
+                  <p className="text-muted-foreground">Occasion</p>
+                  <p className="font-medium">{selectedVariant.occasion}</p>
+                </div>
+              )}
+
+            </div>
+          </div>
+
           <div className="mt-8 flex items-center gap-4">
             <div className="flex items-center rounded-full border border-border">
               <button
@@ -170,13 +321,13 @@ function ProductDetailPage() {
               <span className="w-10 text-center font-medium">{qty}</span>
               <button
                 onClick={() => {
-                  if (qty < product.stock) {
+                  if (qty < displayStock) {
                     setQty((q) => q + 1);
                   } else {
-                    toast.error(`Only ${product.stock} item(s) available`);
+                    toast.error(`Only ${displayStock} item(s) available`);
                   }
                 }}
-                disabled={qty >= product.stock}
+                disabled={qty >= displayStock}
                 className="hover:bg-blush grid h-11 w-11 place-items-center rounded-r-full"
                 aria-label="increase"
               >
@@ -185,13 +336,13 @@ function ProductDetailPage() {
             </div>
 
             <span
-              className={`text-xs ${product.stock > 0
+              className={`text-xs ${displayStock > 0
                 ? "text-emerald-600"
                 : "text-red-600 font-semibold"
                 }`}
             >
-              {product.stock > 0
-                ? `${product.stock} item(s) available`
+              {displayStock > 0
+                ? `${displayStock} item(s) available`
                 : "Out of Stock"}
             </span>
           </div>
@@ -208,7 +359,7 @@ function ProductDetailPage() {
                     productId: product.id,
                     slug: product.slug,
                     name: product.name,
-                    price: product.price,
+                    price: displayPrice,
                     image: product.images[0] ?? "",
                   },
                   qty,
@@ -234,14 +385,14 @@ function ProductDetailPage() {
                   productId: product.id,
                   slug: product.slug,
                   name: product.name,
-                  price: product.price,
+                  price: displayPrice,
                   image: product.images[0] ?? "",
                   quantity: qty,
                 });
 
                 navigate({ to: "/checkout" });
               }}
-              
+
               className={`flex-1 rounded-full px-8 py-4 text-sm tracking-wider uppercase shadow-luxe sm:flex-none ${outOfStock
                 ? "cursor-not-allowed bg-gray-300 text-gray-500"
                 : "bg-rose-gradient text-primary-foreground transition hover:scale-[1.02]"

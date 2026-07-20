@@ -5,6 +5,26 @@ import { Upload, Link as LinkIcon, X, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { resolveImage } from "@/lib/images";
 
+type ProductVariant = {
+  id?: string;
+
+  color: string;
+  size: string;
+  weight: string;
+  material: string;
+  purity: string;
+  finish: string;
+  occasion: string;
+  style: string;
+
+  sku: string;
+
+  price: number | null;
+
+  stock: number;
+
+  images: string[];
+};
 export type ProductInput = {
   slug: string;
   name: string;
@@ -20,6 +40,9 @@ export type ProductInput = {
   is_bestseller: boolean;
   is_featured: boolean;
   tags: string[];
+  gst_enabled: boolean;
+  gst_rate: number;
+  variants: ProductVariant[];
 };
 
 export function ProductForm({
@@ -50,10 +73,15 @@ export function ProductForm({
     rating: 4.5,
     review_count: 0,
     images: [],
+    tags: [],
+
+    gst_enabled: true,
+    gst_rate: 3,
+
     is_new: false,
     is_bestseller: false,
     is_featured: false,
-    tags: [],
+    variants: [],
     ...initial,
   });
   const [urlInput, setUrlInput] = useState("");
@@ -77,6 +105,46 @@ export function ProductForm({
         .toLowerCase()
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/^-|-$/g, ""),
+    );
+  };
+  const addVariant = () => {
+    set("variants", [
+      ...f.variants,
+      {
+        color: "",
+        size: "",
+        weight: "",
+        material: "",
+        purity: "",
+        finish: "",
+        occasion: "",
+        style: "",
+        sku: "",
+        price: null,
+        stock: 0,
+        images: [],
+      },
+    ]);
+  };
+
+  const updateVariant = (
+    index: number,
+    field: keyof ProductVariant,
+    value: any
+  ) => {
+    const updated = [...f.variants];
+    updated[index] = {
+      ...updated[index],
+      [field]: value,
+    };
+
+    set("variants", updated);
+  };
+
+  const removeVariant = (index: number) => {
+    set(
+      "variants",
+      f.variants.filter((_, i) => i !== index)
     );
   };
 
@@ -122,6 +190,8 @@ export function ProductForm({
     }
     setSaving(true);
     try {
+      console.log("Submitting product:", f);
+      console.log("Variants:", f.variants); X
       await onSubmit(f);
     } finally {
       setSaving(false);
@@ -304,6 +374,170 @@ export function ProductForm({
               onChange={(e) => set("stock", Number(e.target.value))}
             />
           </Field>
+          <div className="space-y-4 border-t pt-4">
+            <h3 className="text-sm font-semibold">GST</h3>
+
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="gst_enabled"
+                checked={f.gst_enabled}
+                onChange={(e) => set("gst_enabled", e.target.checked)}
+              />
+
+              <label htmlFor="gst_enabled">
+                Apply GST
+              </label>
+            </div>
+
+            {f.gst_enabled && (
+              <div>
+                <label className="block text-sm mb-1">
+                  GST Rate
+                </label>
+
+                <select
+                  value={f.gst_rate}
+                  onChange={(e) => set("gst_rate", Number(e.target.value))}
+                  className="w-full rounded-md border px-3 py-2"
+                >
+                  <option value={0}>0%</option>
+                  <option value={3}>3%</option>
+                  <option value={5}>5%</option>
+                  <option value={12}>12%</option>
+                  <option value={18}>18%</option>
+                  <option value={28}>28%</option>
+                </select>
+              </div>
+            )}
+          </div>
+        </Card>
+        <Card title="Product Variants">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Variants</h3>
+
+            <button
+              type="button"
+              onClick={addVariant}
+              className="rounded-md bg-primary px-4 py-2 text-white"
+            >
+              + Add Variant
+            </button>
+          </div>
+
+          {f.variants.map((variant, index) => (
+            <div
+              key={index}
+              className="rounded-lg border p-4 space-y-4"
+            >
+              <div className="grid grid-cols-2 gap-4">
+
+                <input
+                  className="input"
+                  placeholder="Color"
+                  value={variant.color}
+                  onChange={(e) =>
+                    updateVariant(index, "color", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Size"
+                  value={variant.size}
+                  onChange={(e) =>
+                    updateVariant(index, "size", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Weight"
+                  value={variant.weight}
+                  onChange={(e) =>
+                    updateVariant(index, "weight", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Material"
+                  value={variant.material}
+                  onChange={(e) =>
+                    updateVariant(index, "material", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Purity"
+                  value={variant.purity}
+                  onChange={(e) =>
+                    updateVariant(index, "purity", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Finish"
+                  value={variant.finish}
+                  onChange={(e) =>
+                    updateVariant(index, "finish", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Occasion"
+                  value={variant.occasion}
+                  onChange={(e) =>
+                    updateVariant(index, "occasion", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="Style"
+                  value={variant.style}
+                  onChange={(e) =>
+                    updateVariant(index, "style", e.target.value)
+                  }
+                />
+
+                <input
+                  placeholder="SKU"
+                  value={variant.sku}
+                  onChange={(e) =>
+                    updateVariant(index, "sku", e.target.value)
+                  }
+                />
+
+                <input
+                  type="number"
+                  placeholder="Stock"
+                  value={variant.stock}
+                  onChange={(e) =>
+                    updateVariant(index, "stock", Number(e.target.value))
+                  }
+                />
+
+                <input
+                  type="number"
+                  placeholder="Price Override"
+                  value={variant.price ?? ""}
+                  onChange={(e) =>
+                    updateVariant(
+                      index,
+                      "price",
+                      e.target.value === "" ? null : Number(e.target.value)
+                    )
+                  }
+                />
+
+              </div>
+
+              <button
+                type="button"
+                onClick={() => removeVariant(index)}
+                className="text-red-600"
+              >
+                Remove Variant
+              </button>
+            </div>
+          ))}
         </Card>
 
         <Card title="Tags & Badges">
