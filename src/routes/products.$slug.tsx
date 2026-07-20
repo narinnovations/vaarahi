@@ -1,6 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { Heart, ShieldCheck, Star, Truck, RotateCcw, Share2, Minus, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { productBySlugQuery, productsQuery } from "@/lib/queries";
@@ -9,6 +10,7 @@ import { discountPercent, formatINR } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useBuyNow } from "@/lib/buy-now";
+
 
 export const Route = createFileRoute("/products/$slug")({
   component: ProductDetailPage,
@@ -42,6 +44,25 @@ function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedWeight, setSelectedWeight] = useState("");
+
+  const [emblaRef, emblaApi] = useEmblaCarousel({
+    loop: false,
+    align: "start",
+  });
+  useEffect(() => {
+    if (!emblaApi) return;
+
+    const onSelect = () => {
+      setActiveImg(emblaApi.selectedScrollSnap());
+    };
+
+    emblaApi.on("select", onSelect);
+    onSelect();
+
+    return () => {
+      emblaApi.off("select", onSelect);
+    };
+  }, [emblaApi]);
   const colors = useMemo(() => {
     return [
       ...new Set(
@@ -145,12 +166,25 @@ function ProductDetailPage() {
       <div className="mx-auto grid max-w-7xl gap-10 px-4 pb-16 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-8">
         {/* Gallery */}
         <div>
-          <div className="bg-blush relative aspect-square overflow-hidden rounded-3xl border border-border/60 shadow-card">
-            <img
-              src={imgs[activeImg]}
-              alt={product.name}
-              className="h-full w-full object-cover"
-            />
+          <div
+            ref={emblaRef}
+            className="bg-blush relative overflow-hidden rounded-3xl border border-border/60 shadow-card"
+          >
+            <div className="flex">
+              {imgs.map((src, index) => (
+                <div
+                  key={index}
+                  className="relative min-w-full flex-[0_0_100%] aspect-square"
+                >
+                  <img
+                    src={src}
+                    alt={`${product.name} ${index + 1}`}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+
             {discount && (
               <span className="bg-ruby absolute top-4 left-4 rounded-full px-3 py-1 text-xs font-semibold text-white">
                 -{discount}% OFF
@@ -162,7 +196,10 @@ function ProductDetailPage() {
               {imgs.map((src, i) => (
                 <button
                   key={i}
-                  onClick={() => setActiveImg(i)}
+                  onClick={() => {
+                    setActiveImg(i);
+                    emblaApi?.scrollTo(i);
+                  }}
                   className={`aspect-square w-20 min-w-[80px] flex-shrink-0 overflow-hidden rounded-xl border-2 transition ${i === activeImg
                     ? "border-primary"
                     : "border-transparent opacity-60"
@@ -248,7 +285,7 @@ function ProductDetailPage() {
 
           <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
             <h3 className="mb-3 text-base font-semibold">
-              Product Highlights
+              Product Details
             </h3>
 
             <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
