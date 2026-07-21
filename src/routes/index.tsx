@@ -6,6 +6,7 @@ import { CategoryStrip } from "@/components/site/CategoryStrip";
 import { ProductCard } from "@/components/site/ProductCard";
 import { InstagramReels } from "@/components/site/InstagramReels";
 import { categoriesQuery, productsQuery } from "@/lib/queries";
+import PromoBanner from "@/components/site/PromoBanner";
 import { TrustStrip } from "@/components/site/TrustStrip";
 import {
   ArrowRight,
@@ -28,6 +29,10 @@ function HomePage() {
   );
   const { data: bestsellers = [] } = useQuery(productsQuery({ bestseller: true, limit: 4 }));
 
+  const { data: newArrivals = [] } = useQuery(
+    productsQuery({ limit: 8 })
+  );
+
 
   return (
     <div>
@@ -36,7 +41,39 @@ function HomePage() {
       <HeroSlider />
       <TrustStrip />
 
+      {/* New Arrivals */}
+      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-8">
+          <p className="text-xs uppercase tracking-[0.3em] text-primary">
+            Just Arrived
+          </p>
 
+          <h2 className="mt-2 font-serif text-3xl font-medium sm:text-5xl">
+            New Arrivals
+          </h2>
+
+          <p className="mt-3 max-w-lg text-sm text-muted-foreground">
+            Discover our newest jewellery and beauty collections.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+          {newArrivals.slice(0, 8).map((p) => (
+            <ProductCard key={p.id} product={p} />
+          ))}
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <Link
+            to="/products"
+            className="rounded-full border border-primary px-8 py-3 text-sm font-medium transition hover:bg-primary hover:text-white"
+          >
+            View All
+          </Link>
+        </div>
+      </section>
+
+      <PromoBanner />
 
       {/* Featured */}
       <section className="mx-auto max-w-7xl px-4 pb-10 sm:px-6 sm:pb-16 lg:px-8">

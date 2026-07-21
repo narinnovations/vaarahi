@@ -86,6 +86,11 @@ const nav: NavSection[] = [
         label: "Hero Banners",
       },
       {
+        to: "/admin/promo-banners",
+        icon: Images,
+        label: "Promo Cards",
+      },
+      {
         to: "/admin/reels",
         icon: Instagram,
         label: "Instagram Reels",
@@ -153,7 +158,7 @@ const nav: NavSection[] = [
         icon: ScrollText,
         label: "Activity Logs",
       },
-     
+
       {
         to: "/admin/settings",
         icon: SettingsIcon,

@@ -29,6 +29,7 @@ import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authen
 import { Route as AuthenticatedAdminSeoRouteImport } from './routes/_authenticated/admin/seo'
 import { Route as AuthenticatedAdminReportsRouteImport } from './routes/_authenticated/admin/reports'
 import { Route as AuthenticatedAdminReelsRouteImport } from './routes/_authenticated/admin/reels'
+import { Route as AuthenticatedAdminPromoBannersRouteImport } from './routes/_authenticated/admin/promo-banners'
 import { Route as AuthenticatedAdminProductsRouteImport } from './routes/_authenticated/admin/products'
 import { Route as AuthenticatedAdminPoliciesRouteImport } from './routes/_authenticated/admin/policies'
 import { Route as AuthenticatedAdminOrdersRouteImport } from './routes/_authenticated/admin/orders'
@@ -159,6 +160,12 @@ const AuthenticatedAdminReelsRoute = AuthenticatedAdminReelsRouteImport.update({
   path: '/reels',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminPromoBannersRoute =
+  AuthenticatedAdminPromoBannersRouteImport.update({
+    id: '/promo-banners',
+    path: '/promo-banners',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminProductsRoute =
   AuthenticatedAdminProductsRouteImport.update({
     id: '/products',
@@ -345,6 +352,7 @@ export interface FileRoutesByFullPath {
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/policies': typeof AuthenticatedAdminPoliciesRoute
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
+  '/admin/promo-banners': typeof AuthenticatedAdminPromoBannersRoute
   '/admin/reels': typeof AuthenticatedAdminReelsRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
@@ -391,6 +399,7 @@ export interface FileRoutesByTo {
   '/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/admin/policies': typeof AuthenticatedAdminPoliciesRoute
   '/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
+  '/admin/promo-banners': typeof AuthenticatedAdminPromoBannersRoute
   '/admin/reels': typeof AuthenticatedAdminReelsRoute
   '/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/admin/seo': typeof AuthenticatedAdminSeoRoute
@@ -441,6 +450,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/orders': typeof AuthenticatedAdminOrdersRouteWithChildren
   '/_authenticated/admin/policies': typeof AuthenticatedAdminPoliciesRoute
   '/_authenticated/admin/products': typeof AuthenticatedAdminProductsRouteWithChildren
+  '/_authenticated/admin/promo-banners': typeof AuthenticatedAdminPromoBannersRoute
   '/_authenticated/admin/reels': typeof AuthenticatedAdminReelsRoute
   '/_authenticated/admin/reports': typeof AuthenticatedAdminReportsRoute
   '/_authenticated/admin/seo': typeof AuthenticatedAdminSeoRoute
@@ -491,6 +501,7 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/policies'
     | '/admin/products'
+    | '/admin/promo-banners'
     | '/admin/reels'
     | '/admin/reports'
     | '/admin/seo'
@@ -537,6 +548,7 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/policies'
     | '/admin/products'
+    | '/admin/promo-banners'
     | '/admin/reels'
     | '/admin/reports'
     | '/admin/seo'
@@ -586,6 +598,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/orders'
     | '/_authenticated/admin/policies'
     | '/_authenticated/admin/products'
+    | '/_authenticated/admin/promo-banners'
     | '/_authenticated/admin/reels'
     | '/_authenticated/admin/reports'
     | '/_authenticated/admin/seo'
@@ -765,6 +778,13 @@ declare module '@tanstack/react-router' {
       path: '/reels'
       fullPath: '/admin/reels'
       preLoaderRoute: typeof AuthenticatedAdminReelsRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
+    '/_authenticated/admin/promo-banners': {
+      id: '/_authenticated/admin/promo-banners'
+      path: '/promo-banners'
+      fullPath: '/admin/promo-banners'
+      preLoaderRoute: typeof AuthenticatedAdminPromoBannersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
     '/_authenticated/admin/products': {
@@ -1067,6 +1087,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminOrdersRoute: typeof AuthenticatedAdminOrdersRouteWithChildren
   AuthenticatedAdminPoliciesRoute: typeof AuthenticatedAdminPoliciesRoute
   AuthenticatedAdminProductsRoute: typeof AuthenticatedAdminProductsRouteWithChildren
+  AuthenticatedAdminPromoBannersRoute: typeof AuthenticatedAdminPromoBannersRoute
   AuthenticatedAdminReelsRoute: typeof AuthenticatedAdminReelsRoute
   AuthenticatedAdminReportsRoute: typeof AuthenticatedAdminReportsRoute
   AuthenticatedAdminSeoRoute: typeof AuthenticatedAdminSeoRoute
@@ -1092,6 +1113,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminPoliciesRoute: AuthenticatedAdminPoliciesRoute,
     AuthenticatedAdminProductsRoute:
       AuthenticatedAdminProductsRouteWithChildren,
+    AuthenticatedAdminPromoBannersRoute: AuthenticatedAdminPromoBannersRoute,
     AuthenticatedAdminReelsRoute: AuthenticatedAdminReelsRoute,
     AuthenticatedAdminReportsRoute: AuthenticatedAdminReportsRoute,
     AuthenticatedAdminSeoRoute: AuthenticatedAdminSeoRoute,

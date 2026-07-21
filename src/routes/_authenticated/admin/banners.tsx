@@ -10,52 +10,80 @@ export const Route = createFileRoute("/_authenticated/admin/banners")({
 });
 
 type BannerForm = {
-  title: string;
-  subtitle: string;
-  eyebrow: string;
   image_url: string;
-  cta_label: string;
-  cta_link: string;
-  active: boolean;
-  starts_at: string;
-  ends_at: string;
+  link_type: string;
+  link_value: string;
+  is_active: boolean;
 };
 
 const empty: BannerForm = {
-  title: "",
-  subtitle: "",
-  eyebrow: "",
   image_url: "",
-  cta_label: "Shop Now",
-  cta_link: "/products",
-  active: true,
-  starts_at: "",
-  ends_at: "",
+  link_type: "category",
+  link_value: "",
+  is_active: true,
 };
 
 function BannersAdmin() {
   const qc = useQueryClient();
+
+  // 1️⃣ Hero banners
   const { data = [] } = useQuery({
     queryKey: ["admin-banners"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("banners").select("*").order("sort_order");
+      const { data, error } = await supabase
+        .from("banners")
+        .select("*")
+        .order("display_order");
+
       if (error) throw error;
+
       return data ?? [];
     },
   });
+
+  // 2️⃣ Categories
+  const { data: categories = [] } = useQuery({
+    queryKey: ["categories"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("slug,name")
+        .order("name");
+
+      if (error) throw error;
+
+      return data ?? [];
+    },
+  });
+
+  // 3️⃣ Products
+  const { data: products = [] } = useQuery({
+    queryKey: ["products"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("products")
+        .select("slug,name")
+        .order("name");
+
+      if (error) throw error;
+
+      return data ?? [];
+    },
+  });
+
   const [f, setF] = useState<BannerForm>(empty);
   const [busy, setBusy] = useState(false);
 
   const upload = async (file: File) => {
     setBusy(true);
     const path = `banners/${Date.now()}-${file.name.replace(/[^a-z0-9.]/gi, "_")}`;
-    const { error } = await supabase.storage.from("product-images").upload(path, file);
+    const { error } = await supabase.storage.from("promo-banners").upload(path, file);
     if (error) {
       toast.error(error.message);
       setBusy(false);
       return;
     }
-    const { data: pub } = supabase.storage.from("product-images").getPublicUrl(path);
+    const { data: pub } = supabase.storage.from("promo-banners").getPublicUrl(path);
     setF((s) => ({ ...s, image_url: pub.publicUrl }));
     setBusy(false);
   };
@@ -63,12 +91,13 @@ function BannersAdmin() {
   const add = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!f.image_url) return toast.error("Please upload or provide a banner image");
-    const nextOrder = (data[data.length - 1]?.sort_order ?? -1) + 1;
+    const nextOrder = (data[data.length - 1]?.display_order ?? -1) + 1;
     const { error } = await supabase.from("banners").insert({
-      ...f,
-      starts_at: f.starts_at || null,
-      ends_at: f.ends_at || null,
-      sort_order: nextOrder,
+      image_url: f.image_url,
+      link_type: f.link_type,
+      link_value: f.link_value,
+      display_order: nextOrder,
+      is_active: f.is_active,
     });
     if (error) return toast.error(error.message);
     toast.success("Banner added");
@@ -85,18 +114,21 @@ function BannersAdmin() {
   };
 
   const toggle = async (id: string, active: boolean) => {
-    await supabase.from("banners").update({ active: !active }).eq("id", id);
+    await supabase
+      .from("banners")
+      .update({ is_active: !active })
+      .eq("id", id);
+
     qc.invalidateQueries({ queryKey: ["admin-banners"] });
     qc.invalidateQueries({ queryKey: ["banners"] });
-  };
-
+  };   // <-- ADD THIS LINE
   const move = async (idx: number, dir: -1 | 1) => {
     const target = data[idx + dir];
     const cur = data[idx];
     if (!target || !cur) return;
     await Promise.all([
-      supabase.from("banners").update({ sort_order: target.sort_order }).eq("id", cur.id),
-      supabase.from("banners").update({ sort_order: cur.sort_order }).eq("id", target.id),
+      supabase.from("banners").update({ display_order: target.display_order }).eq("id", cur.id),
+      supabase.from("banners").update({ display_order: cur.display_order }).eq("id", target.id),
     ]);
     qc.invalidateQueries({ queryKey: ["admin-banners"] });
     qc.invalidateQueries({ queryKey: ["banners"] });
@@ -142,18 +174,77 @@ function BannersAdmin() {
             onChange={(e) => setF({ ...f, image_url: e.target.value })}
           />
         </div>
-        <Field label="Eyebrow" value={f.eyebrow} onChange={(v) => setF({ ...f, eyebrow: v })} placeholder="Bridal Collection · 2026" />
-        <Field label="CTA label" value={f.cta_label} onChange={(v) => setF({ ...f, cta_label: v })} />
-        <Field label="Title" value={f.title} onChange={(v) => setF({ ...f, title: v })} placeholder="Adornments of a lifetime" />
-        <Field label="CTA link" value={f.cta_link} onChange={(v) => setF({ ...f, cta_link: v })} placeholder="/products" />
+        <label className="block">
+          <span className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
+            Link Type
+          </span>
+
+          <select
+            className="input"
+            value={f.link_type}
+            onChange={(e) =>
+              setF({
+                ...f,
+                link_type: e.target.value,
+                link_value: "",
+              })
+            }
+          >
+            <option value="category">Category</option>
+            <option value="product">Product</option>
+            <option value="external">External URL</option>
+          </select>
+        </label>
+
+        <label className="block">
+          <span className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">
+            Destination
+          </span>
+
+          {f.link_type === "category" ? (
+            <select
+              className="input"
+              value={f.link_value}
+              onChange={(e) => setF({ ...f, link_value: e.target.value })}
+            >
+              <option value="">Select Category</option>
+
+              {categories.map((c) => (
+                <option key={c.slug} value={c.slug}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+          ) : f.link_type === "product" ? (
+            <select
+              className="input"
+              value={f.link_value}
+              onChange={(e) => setF({ ...f, link_value: e.target.value })}
+            >
+              <option value="">Select Product</option>
+
+              {products.map((p) => (
+                <option key={p.slug} value={p.slug}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          ) : (
+            <input
+              className="input"
+              placeholder="https://example.com"
+              value={f.link_value}
+              onChange={(e) => setF({ ...f, link_value: e.target.value })}
+            />
+          )}
+        </label>
         <div className="sm:col-span-2">
-          <Field label="Subtitle" value={f.subtitle} onChange={(v) => setF({ ...f, subtitle: v })} textarea />
-        </div>
-        <Field label="Show from (optional)" type="datetime-local" value={f.starts_at} onChange={(v) => setF({ ...f, starts_at: v })} />
-        <Field label="Show until (optional)" type="datetime-local" value={f.ends_at} onChange={(v) => setF({ ...f, ends_at: v })} />
-        <div className="sm:col-span-2">
-          <button className="bg-rose-gradient text-primary-foreground rounded-full px-6 py-2.5 text-sm shadow-luxe">
-            <Plus className="mr-1 inline h-4 w-4" /> Add banner
+          <button
+            type="submit"
+            className="bg-rose-gradient rounded-full px-6 py-2.5 text-sm text-primary-foreground shadow-luxe"
+          >
+            <Plus className="mr-1 inline h-4 w-4" />
+            Add Banner
           </button>
         </div>
       </form>
@@ -163,9 +254,9 @@ function BannersAdmin() {
           <div key={b.id} className="flex items-center gap-4 rounded-2xl border bg-background p-3 shadow-soft">
             <img src={b.image_url} alt="" className="h-16 w-28 rounded-lg object-cover" />
             <div className="min-w-0 flex-1">
-              <div className="truncate font-medium">{b.title || "(Untitled)"}</div>
+              <div className="truncate font-medium">{b.link_type}</div>
               <div className="truncate text-xs text-muted-foreground">
-                {b.eyebrow} · {b.cta_label} → {b.cta_link}
+                {b.link_value}
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -175,8 +266,8 @@ function BannersAdmin() {
               <button onClick={() => move(i, 1)} disabled={i === data.length - 1} className="rounded-lg p-2 hover:bg-blush disabled:opacity-30" aria-label="Move down">
                 <ArrowDown className="h-4 w-4" />
               </button>
-              <button onClick={() => toggle(b.id, b.active)} className={`rounded-lg p-2 ${b.active ? "text-emerald-600" : "text-muted-foreground"}`} aria-label="Toggle active">
-                {b.active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+              <button onClick={() => toggle(b.id, b.is_active)} className={`rounded-lg p-2 ${b.is_active ? "text-emerald-600" : "text-muted-foreground"}`} aria-label="Toggle active">
+                {b.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
               </button>
               <button onClick={() => del(b.id)} className="rounded-lg p-2 text-ruby hover:bg-ruby/10" aria-label="Delete">
                 <Trash2 className="h-4 w-4" />
@@ -188,19 +279,8 @@ function BannersAdmin() {
       </div>
 
       <style>{`.input{width:100%;border:1px solid var(--color-border);background:var(--color-background);border-radius:9999px;padding:.6rem 1.1rem;font-size:.875rem;outline:none}textarea.input{border-radius:1rem;font-family:inherit}`}</style>
-    </div>
+    </div >
   );
 }
 
-function Field({ label, value, onChange, type = "text", textarea, placeholder }: { label: string; value: string; onChange: (v: string) => void; type?: string; textarea?: boolean; placeholder?: string }) {
-  return (
-    <label className="block">
-      <span className="mb-1 block text-xs uppercase tracking-wider text-muted-foreground">{label}</span>
-      {textarea ? (
-        <textarea rows={2} className="input" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
-      ) : (
-        <input type={type} className="input" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} />
-      )}
-    </label>
-  );
-}
+
