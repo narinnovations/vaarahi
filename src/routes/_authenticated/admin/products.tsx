@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { formatINR } from "@/lib/format";
 import { resolveImage } from "@/lib/images";
+import { deleteStorageFile } from "@/lib/deleteStorageFile";
 
 export const Route = createFileRoute("/_authenticated/admin/products")({
   component: ProductsAdmin,
@@ -76,10 +77,23 @@ function ProductsAdmin() {
       );
     }) ?? [];
 
-  const remove = async (id: string, name: string) => {
+  const remove = async (
+    id: string,
+    name: string,
+    images: string[]
+  ) => {
     if (!confirm(`Delete "${name}"?`)) return;
 
-    const { error } = await supabase.from("products").delete().eq("id", id);
+    // Delete all product images from Storage
+    for (const image of images ?? []) {
+      await deleteStorageFile(image);
+    }
+
+    // Delete database record
+    const { error } = await supabase
+      .from("products")
+      .delete()
+      .eq("id", id);
 
     if (error) {
       toast.error(error.message);
@@ -87,9 +101,11 @@ function ProductsAdmin() {
     }
 
     toast.success("Product deleted");
-    qc.invalidateQueries({ queryKey: ["admin-products"] });
-  };
 
+    qc.invalidateQueries({
+      queryKey: ["admin-products"],
+    });
+  };
   if (pathname !== "/admin/products") {
     return <Outlet />;
   }
@@ -253,7 +269,13 @@ function ProductsAdmin() {
                     </Link>
 
                     <button
-                      onClick={() => remove(p.id, p.name)}
+                      onClick={() =>
+                        remove(
+                          p.id,
+                          p.name,
+                          p.images ?? []
+                        )
+                      }
                       className="rounded-lg p-2 text-ruby hover:bg-ruby/10"
                     >
                       <Trash2 className="h-4 w-4" />

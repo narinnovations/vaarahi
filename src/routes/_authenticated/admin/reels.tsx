@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Plus, Trash2, ArrowUp, ArrowDown, Eye, EyeOff, Upload, Instagram } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteStorageFile } from "@/lib/deleteStorageFile";
 
 export const Route = createFileRoute("/_authenticated/admin/reels")({
   component: ReelsAdmin,
@@ -57,11 +58,35 @@ function ReelsAdmin() {
     qc.invalidateQueries({ queryKey: ["reels", "active"] });
   };
 
-  const del = async (id: string) => {
+  const del = async (
+    id: string,
+    thumbnailUrl: string | null
+  ) => {
     if (!confirm("Delete this reel?")) return;
-    await supabase.from("instagram_reels").delete().eq("id", id);
-    qc.invalidateQueries({ queryKey: ["admin-reels"] });
-    qc.invalidateQueries({ queryKey: ["reels", "active"] });
+
+    if (thumbnailUrl) {
+      await deleteStorageFile(thumbnailUrl);
+    }
+
+    const { error } = await supabase
+      .from("instagram_reels")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    toast.success("Reel deleted");
+
+    qc.invalidateQueries({
+      queryKey: ["admin-reels"],
+    });
+
+    qc.invalidateQueries({
+      queryKey: ["reels", "active"],
+    });
   };
   const toggle = async (id: string, active: boolean) => {
     await supabase.from("instagram_reels").update({ active: !active }).eq("id", id);
@@ -140,7 +165,12 @@ function ReelsAdmin() {
             <button onClick={() => move(i, -1)} disabled={i === 0} className="rounded-lg p-2 hover:bg-blush disabled:opacity-30"><ArrowUp className="h-4 w-4" /></button>
             <button onClick={() => move(i, 1)} disabled={i === data.length - 1} className="rounded-lg p-2 hover:bg-blush disabled:opacity-30"><ArrowDown className="h-4 w-4" /></button>
             <button onClick={() => toggle(r.id, r.active)} className={`rounded-lg p-2 ${r.active ? "text-emerald-600" : "text-muted-foreground"}`}>{r.active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}</button>
-            <button onClick={() => del(r.id)} className="rounded-lg p-2 text-ruby hover:bg-ruby/10"><Trash2 className="h-4 w-4" /></button>
+            <button onClick={() =>
+              del(
+                r.id,
+                r.thumbnail_url
+              )
+            } className="rounded-lg p-2 text-ruby hover:bg-ruby/10"><Trash2 className="h-4 w-4" /></button>
           </div>
         ))}
         {data.length === 0 && <p className="rounded-2xl border bg-background p-8 text-center text-sm text-muted-foreground sm:col-span-2">No reels yet.</p>}

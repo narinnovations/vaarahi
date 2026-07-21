@@ -9,6 +9,7 @@ import { useState } from "react";
 import { Plus, Pencil, Trash2, Search } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteStorageFile } from "@/lib/deleteStorageFile";
 
 export const Route = createFileRoute("/_authenticated/admin/categories")({
   component: CategoriesPage,
@@ -36,8 +37,16 @@ function CategoriesPage() {
     },
   });
 
-  const remove = async (id: string, name: string) => {
+  const remove = async (
+    id: string,
+    name: string,
+    imageUrl: string | null
+  ) => {
     if (!confirm(`Delete "${name}"?`)) return;
+
+    if (imageUrl) {
+      await deleteStorageFile(imageUrl);
+    }
 
     const { error } = await supabase
       .from("categories")
@@ -194,7 +203,13 @@ function CategoriesPage() {
                       </Link>
 
                       <button
-                        onClick={() => remove(cat.id, cat.name)}
+                        onClick={() =>
+                          remove(
+                            cat.id,
+                            cat.name,
+                            cat.image_url
+                          )
+                        }
                         className="rounded-lg p-2 text-red-600 hover:bg-red-50"
                         title="Delete Category"
                       >

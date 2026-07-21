@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Plus, Trash2, ArrowUp, ArrowDown, Eye, EyeOff, Upload } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteStorageFile } from "@/lib/deleteStorageFile";
 
 export const Route = createFileRoute("/_authenticated/admin/promo-banners")({
     component: PromoBannersAdmin,
@@ -135,11 +136,31 @@ function PromoBannersAdmin() {
 
     };
 
-    const del = async (id: string) => {
+    const del = async (
+        id: string,
+        imageUrl: string
+    ) => {
         if (!confirm("Delete this banner?")) return;
-        await supabase.from("promo_banners").delete().eq("id", id);
-        qc.invalidateQueries({ queryKey: ["admin-promo-banners"] });
 
+        if (imageUrl) {
+            await deleteStorageFile(imageUrl);
+        }
+
+        const { error } = await supabase
+            .from("promo_banners")
+            .delete()
+            .eq("id", id);
+
+        if (error) {
+            toast.error(error.message);
+            return;
+        }
+
+        toast.success("Promo card deleted");
+
+        qc.invalidateQueries({
+            queryKey: ["admin-promo-banners"],
+        });
     };
 
     const toggle = async (id: string, active: boolean) => {
@@ -351,12 +372,17 @@ function PromoBannersAdmin() {
                                 <ArrowDown className="h-4 w-4" />
                             </button>
                             <button onClick={() => toggle(b.id, b.is_active)} className={`rounded-lg p-2 ${b.is_active
-                                    ? "text-emerald-600"
-                                    : "text-muted-foreground"
+                                ? "text-emerald-600"
+                                : "text-muted-foreground"
                                 }`} aria-label="Toggle active">
                                 {b.is_active ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                             </button>
-                            <button onClick={() => del(b.id)} className="rounded-lg p-2 text-ruby hover:bg-ruby/10" aria-label="Delete">
+                            <button onClick={() =>
+                                del(
+                                    b.id,
+                                    b.image_url
+                                )
+                            } className="rounded-lg p-2 text-ruby hover:bg-ruby/10" aria-label="Delete">
                                 <Trash2 className="h-4 w-4" />
                             </button>
                         </div>
