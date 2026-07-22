@@ -8,6 +8,7 @@ import { Link } from "@tanstack/react-router";
 
 const searchSchema = z.object({
   category: z.string().optional(),
+  q: z.string().optional(),
   sort: z.enum(["latest", "price-asc", "price-desc", "rating"]).optional(),
 });
 
@@ -34,18 +35,34 @@ function ProductsPage() {
   );
 
   const sorted = useMemo(() => {
-    const arr = [...products];
+    let arr = [...products];
+
+    // Search filter
+    if (search.q?.trim()) {
+      const q = search.q.toLowerCase();
+
+      arr = arr.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category_slug?.toLowerCase().includes(q) ||
+          p.description?.toLowerCase().includes(q)
+      );
+    }
+
     switch (search.sort) {
       case "price-asc":
         return arr.sort((a, b) => a.price - b.price);
+
       case "price-desc":
         return arr.sort((a, b) => b.price - a.price);
+
       case "rating":
         return arr.sort((a, b) => b.rating - a.rating);
+
       default:
         return arr;
     }
-  }, [products, search.sort]);
+  }, [products, search.q, search.sort]);
 
   const activeCategory = categories.find((c) => c.slug === search.category);
 
@@ -69,11 +86,10 @@ function ProductsPage() {
             <Link
               to="/products"
               search={{}}
-              className={`whitespace-nowrap rounded-full border px-3 py-2 text-[11px] sm:px-4 sm:py-1.5 sm:text-xs tracking-wide uppercase transition ${
-                !search.category
-                  ? "bg-charcoal text-pearl border-charcoal"
-                  : "border-border hover:border-primary hover:text-primary"
-              }`}
+              className={`whitespace-nowrap rounded-full border px-3 py-2 text-[11px] sm:px-4 sm:py-1.5 sm:text-xs tracking-wide uppercase transition ${!search.category
+                ? "bg-charcoal text-pearl border-charcoal"
+                : "border-border hover:border-primary hover:text-primary"
+                }`}
             >
               All
             </Link>
@@ -82,11 +98,10 @@ function ProductsPage() {
                 key={c.slug}
                 to="/products"
                 search={{ category: c.slug }}
-                className={`whitespace-nowrap rounded-full border px-3 py-2 text-[11px] sm:px-4 sm:py-1.5 sm:text-xs tracking-wide uppercase transition ${
-                  search.category === c.slug
-                    ? "bg-charcoal text-pearl border-charcoal"
-                    : "border-border hover:border-primary hover:text-primary"
-                }`}
+                className={`whitespace-nowrap rounded-full border px-3 py-2 text-[11px] sm:px-4 sm:py-1.5 sm:text-xs tracking-wide uppercase transition ${search.category === c.slug
+                  ? "bg-charcoal text-pearl border-charcoal"
+                  : "border-border hover:border-primary hover:text-primary"
+                  }`}
               >
                 {c.name}
               </Link>
@@ -120,7 +135,7 @@ function ProductsPage() {
           </div>
         ) : sorted.length === 0 ? (
           <div className="rounded-2xl border border-dashed py-14 sm:py-24 text-center text-muted-foreground">
-            No products in this collection yet.
+            No products found.
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-4 sm:gap-6 md:grid-cols-3 lg:grid-cols-4">

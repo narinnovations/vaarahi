@@ -57,10 +57,21 @@ export default function PromoBanner() {
         };
     }, [emblaApi]);
     return (
-        <section className="mx-auto max-w-7xl px-4 py-8">
+        <section className="mx-auto max-w-7xl px-4 pt-8">
             <div
-                className="overflow-hidden rounded-3xl"
                 ref={emblaRef}
+                className="
+        overflow-hidden
+        rounded-3xl
+
+        h-[240px]
+
+        sm:h-[380px]
+
+        lg:h-[92vh]
+        lg:min-h-[560px]
+        lg:max-h-[820px]
+    "
             >
                 <div className="flex">
                     {promoCards.map((card) => (
@@ -77,7 +88,7 @@ export default function PromoBanner() {
                                     <img
                                         src={card.image_url}
                                         alt={card.title}
-                                        className="w-full h-[420px] md:h-[500px] object-cover"
+                                        className="h-full w-full object-cover"
                                     />
                                 </a>
                             ) : (
@@ -86,7 +97,7 @@ export default function PromoBanner() {
                                         src={card.image_url}
                                         alt={card.title}
                                         loading="eager"
-                                        className="w-full aspect-[16/6] object-cover"
+                                        className="h-full w-full object-cover"
                                     />
                                 </Link>
                             )}
@@ -94,34 +105,24 @@ export default function PromoBanner() {
                     ))}
                 </div>
             </div>
-            <div className="mt-4 flex items-center justify-center gap-3">
+            <div className="mt-5 flex justify-center">
 
-                <button
-                    onClick={() => emblaApi?.scrollPrev()}
-                    className="rounded-full border bg-white px-4 py-2 shadow"
-                >
-                    ←
-                </button>
+
 
                 <div className="flex gap-2">
                     {promoCards.map((_, index) => (
                         <button
                             key={index}
                             onClick={() => emblaApi?.scrollTo(index)}
-                            className={`h-3 w-3 rounded-full ${selected === index
-                                ? "bg-primary"
-                                : "bg-gray-300"
+                            className={`rounded-full transition-all ${selected === index
+                                    ? "bg-rose-gradient w-8 h-1.5 sm:w-10"
+                                    : "bg-charcoal/25 w-4 h-1.5 sm:w-5"
                                 }`}
                         />
                     ))}
                 </div>
 
-                <button
-                    onClick={() => emblaApi?.scrollNext()}
-                    className="rounded-full border bg-white px-4 py-2 shadow"
-                >
-                    →
-                </button>
+
 
             </div>
         </section>

@@ -420,7 +420,7 @@ function ProductDetailPage() {
           <div className="mt-8 grid grid-cols-3 gap-3 border-t border-border pt-6 text-xs">
             {[
               { Icon: Truck, label: "Free shipping ₹999+" },
-              { Icon: RotateCcw, label: "7-day returns" },
+              { Icon: ShieldCheck, label: "100% Genuine Products" },
               { Icon: ShieldCheck, label: "Secure checkout" },
             ].map((t) => (
               <div key={t.label} className="flex flex-col items-center gap-1.5 text-center">

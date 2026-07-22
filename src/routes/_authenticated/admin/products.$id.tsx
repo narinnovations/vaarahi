@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { ProductForm, type ProductInput } from "@/components/admin/ProductForm";
+import { deleteStorageFile } from "@/lib/deleteStorageFile";
 
 export const Route = createFileRoute("/_authenticated/admin/products/$id")({
   component: EditProduct,
@@ -43,6 +44,8 @@ function EditProduct() {
   if (!data) return <div>Not found</div>;
 
   const save = async (p: ProductInput) => {
+    const oldImages = data.images ?? [];
+
     const { error } = await supabase
       .from("products")
       .update({
@@ -70,6 +73,11 @@ function EditProduct() {
     if (error) {
       toast.error(error.message);
       return;
+    }
+    for (const image of oldImages) {
+      if (!p.images.includes(image)) {
+        await deleteStorageFile(image);
+      }
     }
     // Delete old variants
     const { error: deleteError } = await supabase

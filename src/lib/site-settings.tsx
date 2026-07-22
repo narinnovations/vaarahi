@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import vaarahiLogo from "@/assets/vaarahi-logo.png";
 
+
 export type StoreSettings = {
   name: string;
   tagline: string;
@@ -60,7 +61,7 @@ export const DEFAULT_SETTINGS: AllSettings = {
     enabled: true,
     items: [
       "🚚 Free Shipping on Orders Above ₹999",
-      "🔄 Easy 7-Day Returns",
+      "💯 100% Genuine Products",
       "💳 100% Secure Payments",
       "⭐ Premium Quality Handcrafted",
       "🎉 Festival Offers Available",

@@ -1,4 +1,4 @@
-import { Award, Gem, Sparkles, Truck } from "lucide-react";
+import { Award, Gem, ShieldCheck, Truck } from "lucide-react";
 
 const ITEMS = [
   {
@@ -17,9 +17,9 @@ const ITEMS = [
     subtitle: "Orders above ₹999",
   },
   {
-    Icon: Sparkles,
-    title: "Easy Returns",
-    subtitle: "7-day happiness",
+    Icon: ShieldCheck,
+    title: "100% Genuine",
+    subtitle: "Authentic products",
   },
 ];
 

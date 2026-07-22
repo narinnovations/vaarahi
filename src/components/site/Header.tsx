@@ -1,11 +1,13 @@
 import { Link } from "@tanstack/react-router";
 import { Heart, Menu, Search, ShoppingBag, User, ShieldCheck, LogIn, LogOut, Package, Info, Phone, FileText } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { useCart } from "@/lib/cart";
 import { useAuth } from "@/lib/auth";
 import { useWishlist } from "@/lib/wishlist";
 import { useSettings, useLogo } from "@/lib/site-settings";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { SearchOverlay } from "@/components/site/SearchOverlay";
 
 const nav = [
   { to: "/", label: "Home" },
@@ -26,6 +28,10 @@ export function Header() {
   const settings = useSettings();
   const logo = useLogo();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+
+  const navigate = useNavigate();
+  const [search, setSearch] = useState("");
   const brandName = settings.store.name || "VAARAHI";
   const tagline = settings.store.tagline || "Jewellery · Fashion · Accessories";
   const close = () => setMobileOpen(false);
@@ -132,18 +138,25 @@ export function Header() {
         </Link>
 
         <div className="hidden min-w-0 flex-1 items-center justify-center lg:flex">
-          <div className="relative w-full max-w-md">
-            <Search className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              placeholder="Search jewellery, bangles, gifts…"
-              className="h-11 w-full rounded-full border border-border bg-blush/40 pr-4 pl-10 text-sm outline-none transition placeholder:text-muted-foreground focus:border-rose-gold focus:bg-background focus:ring-2 focus:ring-rose-gold/20"
-            />
-          </div>
+          <button
+            type="button"
+            onClick={() => setSearchOpen(true)}
+            className="flex h-11 w-full max-w-md items-center rounded-full border border-border bg-blush/40 px-4 text-sm text-muted-foreground transition hover:bg-background hover:ring-2 hover:ring-rose-gold/20"
+          >
+            <Search className="mr-3 h-4 w-4" />
+            Search jewellery, bangles, gifts...
+          </button>
         </div>
 
         <div className="ml-auto flex items-center gap-1 sm:gap-2">
-          <button className="rounded-full p-2 hover:bg-blush lg:hidden" aria-label="Search">
+          <button
+            className="rounded-full p-2 hover:bg-blush lg:hidden"
+            aria-label="Search"
+            onClick={() => {
+              console.log("Mobile search clicked");
+              setSearchOpen(true);
+            }}
+          >
             <Search className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
           </button>
           <Link
@@ -207,6 +220,10 @@ export function Header() {
           ))}
         </div>
       </nav>
+      <SearchOverlay
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
     </header>
   );
 }

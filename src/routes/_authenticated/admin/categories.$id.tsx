@@ -2,6 +2,7 @@ import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteStorageFile } from "@/lib/deleteStorageFile";
 import {
   CategoryForm,
   type CategoryInput,
@@ -32,6 +33,7 @@ function EditCategoryPage() {
   });
 
   const update = async (values: CategoryInput) => {
+    const oldImage = category.image_url;
     const { error } = await supabase
       .from("categories")
       .update({
@@ -46,6 +48,12 @@ function EditCategoryPage() {
     if (error) {
       toast.error(error.message);
       return;
+    }
+    if (
+      oldImage &&
+      oldImage !== values.image_url
+    ) {
+      await deleteStorageFile(oldImage);
     }
 
     toast.success("Category updated");
