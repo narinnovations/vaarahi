@@ -151,6 +151,8 @@ function RootComponent() {
               </main>
 
               <Footer />
+
+              <Toaster richColors position="top-right" />
             </div>
           </BuyNowProvider>
         </CartProvider>

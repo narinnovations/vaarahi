@@ -16,10 +16,10 @@ export const Route = createFileRoute("/products/$slug")({
   component: ProductDetailPage,
   head: ({ params }) => ({
     meta: [
-      { title: `${prettify(params.slug)} — Satyabhama` },
+      { title: `${prettify(params.slug)} — VAARAHI` },
       {
         name: "description",
-        content: "Handcrafted luxury piece from the Satyabhama collection.",
+        content: "Handcrafted luxury piece from the VAARAHI collection.",
       },
     ],
   }),

@@ -14,7 +14,7 @@ export const Route = createFileRoute("/policies/$slug")({
   },
   head: ({ loaderData }) => ({
     meta: [
-      { title: `${loaderData?.title ?? "Policy"} — Satyabhama` },
+      { title: `${loaderData?.title ?? "Policy"} — VAARAHI` },
       { name: "description", content: (loaderData?.body ?? "").slice(0, 155) },
     ],
   }),
@@ -36,7 +36,7 @@ function Page() {
   const p = Route.useLoaderData();
   return (
     <div className="mx-auto max-w-3xl px-4 py-14 sm:px-6">
-      <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground">Satyabhama</p>
+      <p className="text-xs tracking-[0.3em] uppercase text-muted-foreground">VAARAHI</p>
       <h1 className="mt-2 font-serif text-4xl font-medium">{p.title}</h1>
       <p className="mt-1 text-xs text-muted-foreground">
         Last updated {new Date(p.updated_at).toLocaleDateString("en-IN")}

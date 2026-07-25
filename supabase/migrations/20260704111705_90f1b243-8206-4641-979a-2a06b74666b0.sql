@@ -159,12 +159,12 @@ CREATE POLICY "Admins manage policies" ON public.policies FOR ALL TO authenticat
   USING (public.is_admin(auth.uid())) WITH CHECK (public.is_admin(auth.uid()));
 
 INSERT INTO public.policies (slug, title, body) VALUES
-  ('privacy', 'Privacy Policy', 'We at Satyabhama respect your privacy. We collect only what is necessary to fulfil your orders — name, address, phone, email — and never sell it. Payment data is handled by the payment gateway; we do not store card details.'),
+  ('privacy', 'Privacy Policy', 'We at VAARAHI respect your privacy. We collect only what is necessary to fulfil your orders — name, address, phone, email — and never sell it. Payment data is handled by the payment gateway; we do not store card details.'),
   ('terms', 'Terms & Conditions', 'By using this site you agree to our terms. All product images are indicative. Prices, offers and stock are subject to change without notice.'),
   ('shipping', 'Shipping Policy', 'Orders are dispatched within 2 business days. Delivery across India in 4–7 days. Free shipping on orders above ₹999.'),
   ('returns', 'Return Policy', 'Return unused items in original packaging within 7 days of delivery. Jewellery and cosmetics are non-returnable for hygiene reasons unless damaged.'),
   ('refund', 'Refund Policy', 'Approved refunds are credited to the original payment method within 5–7 business days after we receive the returned item.'),
-  ('about', 'About Us', 'Satyabhama is a premium ladies'' fashion, jewellery & lifestyle store at Suryanarayana Puram, Andhra Pradesh — bringing you handpicked collections crafted for the modern Indian woman.'),
+  ('about', 'About Us', 'VAARAHI is a premium ladies'' fashion, jewellery & lifestyle store at Suryanarayana Puram, Andhra Pradesh — bringing you handpicked collections crafted for the modern Indian woman.'),
   ('contact', 'Contact Us', 'Masjid Centre, Mantripragada Vari Street, Beside Maharaja Kitchen, Suryanarayana Puram, Andhra Pradesh – 533001. Call/WhatsApp: +91 89194 92504. Instagram: @sri_sai_womensworld');
 
 -- ============ SITE SETTINGS ============
@@ -183,13 +183,13 @@ CREATE POLICY "Admins manage settings" ON public.site_settings FOR ALL TO authen
 
 INSERT INTO public.site_settings (key, value) VALUES
   ('store', jsonb_build_object(
-     'name','Satyabhama',
+     'name','VAARAHI',
      'tagline','Fashion · Jewellery · Accessories',
      'address','Masjid Centre, Mantripragada Vari Street, Beside Maharaja Kitchen, Suryanarayana Puram, Andhra Pradesh – 533001',
      'phone','+91 89194 92504',
      'whatsapp','918919492504',
      'instagram','sri_sai_womensworld',
-     'email','satyabhama@example.com',
+     'email','vaarahi@example.com',
      'gstin',''
   )),
   ('shipping', jsonb_build_object('flat_rate',99,'free_above',999)),

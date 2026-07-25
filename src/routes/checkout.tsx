@@ -35,6 +35,8 @@ function CheckoutPage() {
   const [couponCode, setCouponCode] = useState("");
   const [coupon, setCoupon] = useState<any>(null);
   const [discount, setDiscount] = useState(0);
+  const [showCoupons, setShowCoupons] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
   const shipping =
     checkoutSubtotal >= 999 || checkoutSubtotal === 0
       ? 0
@@ -86,6 +88,7 @@ function CheckoutPage() {
     );
   }
   const applyCoupon = async () => {
+    console.log("applyCoupon called", couponCode);
 
     if (!couponCode.trim()) {
       toast.error("Enter coupon code");
@@ -100,15 +103,25 @@ function CheckoutPage() {
       .or("expires_at.is.null,expires_at.gt.now()")
       .single();
 
+    console.log("Coupon data:", data);
+    console.log("Coupon error:", error);
+
     if (error || !data) {
       toast.error("Invalid coupon");
       return;
     }
 
-    if (checkoutSubtotal < Number(data.min_order ?? 0)) {
+    const minOrder = Number(data.min_order ?? 0);
+
+    if (checkoutSubtotal < minOrder) {
+      const remaining = minOrder - checkoutSubtotal;
+
       toast.error(
-        `Minimum order should be ${formatINR(Number(data.min_order))}`
+        `Minimum order is ${formatINR(minOrder)}. Add ${formatINR(
+          remaining
+        )} more to use ${data.code}.`
       );
+
       return;
     }
 
@@ -119,6 +132,10 @@ function CheckoutPage() {
         checkoutSubtotal *
         Number(data.discount_value) /
         100;
+
+      if (data.max_discount) {
+        value = Math.min(value, Number(data.max_discount));
+      }
     } else {
       value = Number(data.discount_value);
     }
@@ -126,8 +143,32 @@ function CheckoutPage() {
     setCoupon(data);
     setDiscount(value);
 
-    toast.success("Coupon applied successfully");
+    toast.success(
+      `${data.code} applied successfully! You saved ${formatINR(value)}`
+    );
 
+  };
+  const loadCoupons = async () => {
+    console.log("Button clicked");
+
+    try {
+      const { data, error } = await supabase
+        .from("coupons")
+        .select("*")
+        .eq("active", true)
+        .order("created_at", { ascending: false });
+
+      console.log("Data:", data);
+      console.log("Error:", error);
+
+      if (!error && data) {
+        setAvailableCoupons(data);
+      }
+
+      setShowCoupons(true);
+    } catch (err) {
+      console.error(err);
+    }
   };
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -205,7 +246,7 @@ function CheckoutPage() {
           subtotal: checkoutSubtotal,
           shipping,
           discount,
-          coupon_code: couponCode || null,
+          coupon_code: coupon?.code ?? null,
           total,
 
           payment_method: String(fd.get("pay") ?? "cod"),
@@ -265,6 +306,8 @@ function CheckoutPage() {
       setSubmitting(false);
     }
   };
+
+  console.log("showCoupons =", showCoupons);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -375,6 +418,13 @@ function CheckoutPage() {
                   Apply
                 </button>
               </div>
+              <button
+                type="button"
+                onClick={loadCoupons}
+                className="mt-3 text-sm font-medium text-primary hover:underline"
+              >
+                🎁 View Available Coupons
+              </button>
             </div>
           ) : null}
           <dl className="mt-5 space-y-2 border-t border-border pt-4 text-sm">
@@ -445,6 +495,101 @@ function CheckoutPage() {
           </button>
         </aside>
       </form>
+
+      {showCoupons && (
+        console.log("Popup opened"),
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">
+                🎁 Available Coupons
+              </h2>
+
+              <button
+                onClick={() => setShowCoupons(false)}
+                className="text-2xl leading-none"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="max-h-[400px] space-y-4 overflow-y-auto">
+              {availableCoupons.length === 0 ? (
+                <p className="text-center text-muted-foreground">
+                  No coupons available
+                </p>
+              ) : (
+                availableCoupons.map((c) => (
+                  <div
+                    key={c.id}
+                    className="rounded-xl border p-4"
+                  >
+                    <h3 className="font-semibold text-primary">
+                      {c.code}
+                    </h3>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      {c.discount_type === "percent"
+                        ? `${c.discount_value}% OFF`
+                        : `₹${c.discount_value} OFF`}
+                    </p>
+
+                    <p className="text-xs text-muted-foreground">
+                      Minimum Order ₹{c.min_order}
+                    </p>
+
+                    <button
+                      className="mt-3 w-full rounded-full bg-primary py-2 text-white"
+                      onClick={async () => {
+                        setCouponCode(c.code);
+                        setShowCoupons(false);
+
+                        const minOrder = Number(c.min_order ?? 0);
+
+                        if (checkoutSubtotal < minOrder) {
+                          const remaining = minOrder - checkoutSubtotal;
+
+                          toast.error(
+                            `${c.code} requires a minimum order of ${formatINR(
+                              minOrder
+                            )}. Add ${formatINR(remaining)} more to unlock this offer.`
+                          );
+
+                          return;
+                        }
+
+                        let value = 0;
+
+                        if (c.discount_type === "percent") {
+                          value =
+                            checkoutSubtotal *
+                            Number(c.discount_value) /
+                            100;
+
+                          if (c.max_discount) {
+                            value = Math.min(value, Number(c.max_discount));
+                          }
+                        } else {
+                          value = Number(c.discount_value);
+                        }
+
+                        setCoupon(c);
+                        setDiscount(value);
+
+                        toast.success(
+                          `${c.code} applied successfully! You saved ${formatINR(value)}`
+                        );
+                      }}
+                    >
+                      Apply Coupon
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <style>{`
         .input {

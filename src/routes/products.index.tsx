@@ -16,10 +16,10 @@ export const Route = createFileRoute("/products/")({
   validateSearch: (input) => searchSchema.parse(input),
   head: () => ({
     meta: [
-      { title: "Shop All — Satyabhama" },
+      { title: "Shop All — VAARAHI" },
       {
         name: "description",
-        content: "Browse the full Satyabhama collection of luxury jewellery, handbags and gifts.",
+        content: "Browse the full VAARAHI collection of luxury jewellery, handbags and gifts.",
       },
     ],
   }),

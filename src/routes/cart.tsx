@@ -7,10 +7,10 @@ import { resolveImage } from "@/lib/images";
 export const Route = createFileRoute("/cart")({
   head: () => ({
     meta: [
-      { title: "Shopping Bag — Satyabhama" },
+      { title: "Shopping Bag — VAARAHI" },
       {
         name: "description",
-        content: "Review your Satyabhama shopping bag.",
+        content: "Review your VAARAHI shopping bag.",
       },
     ],
   }),

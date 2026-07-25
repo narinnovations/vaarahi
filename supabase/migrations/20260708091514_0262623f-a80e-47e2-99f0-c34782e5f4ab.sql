@@ -87,9 +87,9 @@ INSERT INTO public.site_settings (key, value) VALUES
   ))
 ON CONFLICT (key) DO NOTHING;
 
--- Rename existing 'store' if it still says Satyabhama
+-- Rename existing 'store' if it still says VAARAHI
 UPDATE public.site_settings
 SET value = value
   || jsonb_build_object('name', 'VAARAHI')
   || jsonb_build_object('tagline', 'Jewellery · Fashion · Accessories')
-WHERE key = 'store' AND (value->>'name' IS NULL OR value->>'name' = 'Satyabhama' OR value->>'name' = '');
+WHERE key = 'store' AND (value->>'name' IS NULL OR value->>'name' = 'VAARAHI' OR value->>'name' = '');
