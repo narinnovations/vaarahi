@@ -34,8 +34,16 @@ export type InvoiceSettings = {
   invoice_prefix?: string;
 };
 
+
+export type ShippingSettings = {
+  flat_rate: number;
+  free_above: number;
+};
+
+
 export type AllSettings = {
   store: StoreSettings;
+  shipping: ShippingSettings;
   announcement: AnnouncementSettings;
   whatsapp: WhatsAppSettings;
   reels_section: ReelsSectionSettings;
@@ -43,7 +51,14 @@ export type AllSettings = {
   invoice: InvoiceSettings;
 };
 
+
 export const DEFAULT_SETTINGS: AllSettings = {
+
+  shipping: {
+    flat_rate: 180,
+    free_above: 1500,
+  },
+
   store: {
     name: "VAARAHI",
     tagline: "Jewellery · Fashion · Accessories",
@@ -99,6 +114,12 @@ export function useSettings() {
       for (const row of data ?? []) map[row.key] = row.value;
       return {
         store: { ...DEFAULT_SETTINGS.store, ...(map.store as object) } as StoreSettings,
+
+        shipping: {
+          ...DEFAULT_SETTINGS.shipping,
+          ...(map.shipping as Partial<ShippingSettings>),
+        },
+
         announcement: { ...DEFAULT_SETTINGS.announcement, ...(map.announcement as object) } as AnnouncementSettings,
         whatsapp: { ...DEFAULT_SETTINGS.whatsapp, ...(map.whatsapp as object) } as WhatsAppSettings,
         reels_section: { ...DEFAULT_SETTINGS.reels_section, ...(map.reels_section as object) } as ReelsSectionSettings,

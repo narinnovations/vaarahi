@@ -8,6 +8,7 @@ import { formatINR } from "@/lib/format";
 import { resolveImage } from "@/lib/images";
 import { supabase } from "@/integrations/supabase/client";
 import { useBuyNow } from "@/lib/buy-now";
+import { useSettings } from "@/lib/site-settings";
 
 export const Route = createFileRoute("/checkout")({
   head: () => ({
@@ -30,6 +31,7 @@ function CheckoutPage() {
     0,
   );
   const { user } = useAuth();
+  const settings = useSettings();
   const [placed, setPlaced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [couponCode, setCouponCode] = useState("");
@@ -37,10 +39,24 @@ function CheckoutPage() {
   const [discount, setDiscount] = useState(0);
   const [showCoupons, setShowCoupons] = useState(false);
   const [availableCoupons, setAvailableCoupons] = useState<any[]>([]);
-  const shipping =
-    checkoutSubtotal >= 999 || checkoutSubtotal === 0
+
+  const shippingSettings = settings.shipping;
+
+  console.log("Checkout subtotal:", checkoutSubtotal);
+  console.log("Shipping settings:", shippingSettings);
+  console.log("Calculated shipping:",
+    checkoutSubtotal === 0 ||
+      checkoutSubtotal >= Number(shippingSettings.free_above)
       ? 0
-      : 79;
+      : Number(shippingSettings.flat_rate)
+  );
+
+  const shipping =
+    checkoutSubtotal === 0 ||
+      checkoutSubtotal >= Number(shippingSettings.free_above)
+      ? 0
+      : Number(shippingSettings.flat_rate);
+
 
   const total = Math.max(
     checkoutSubtotal + shipping - discount,

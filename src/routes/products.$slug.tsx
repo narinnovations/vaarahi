@@ -10,6 +10,7 @@ import { discountPercent, formatINR } from "@/lib/format";
 import { useCart } from "@/lib/cart";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useBuyNow } from "@/lib/buy-now";
+import { useSettings } from "@/lib/site-settings";
 
 
 export const Route = createFileRoute("/products/$slug")({
@@ -30,6 +31,8 @@ function prettify(slug: string) {
 }
 
 function ProductDetailPage() {
+  const settings = useSettings();
+  const shippingSettings = settings.shipping;
   const { slug } = Route.useParams();
   const navigate = useNavigate();
   const { data: product, isLoading } = useQuery(productBySlugQuery(slug));
@@ -271,13 +274,18 @@ function ProductDetailPage() {
 
             </div>
           )}
-          <div className="mt-6 flex items-baseline gap-3">
-            <span className="font-serif text-4xl font-semibold">{formatINR(displayPrice)}</span>
+          
+          <div className="mt-6 flex flex-wrap items-baseline gap-3">
+            <span className="font-sans text-4xl font-bold tracking-normal tabular-nums">
+              {formatINR(displayPrice)}
+            </span>
+
             {product.original_price && (
               <>
-                <span className="text-lg text-muted-foreground line-through">
+                <span className="font-sans text-lg font-normal tracking-normal text-muted-foreground line-through tabular-nums">
                   {formatINR(product.original_price)}
                 </span>
+                ```
                 {discount && (
                   <span className="text-ruby text-sm font-semibold">Save {discount}%</span>
                 )}
@@ -285,7 +293,7 @@ function ProductDetailPage() {
             )}
           </div>
           <p className="mt-1 text-xs text-muted-foreground">
-            Inclusive of all taxes · Free shipping above ₹999
+            Inclusive of all taxes · Free shipping above ₹{shippingSettings.free_above}
           </p>
 
           <p className="mt-6 leading-relaxed text-charcoal/80">{product.description}</p>
@@ -419,7 +427,7 @@ function ProductDetailPage() {
 
           <div className="mt-8 grid grid-cols-3 gap-3 border-t border-border pt-6 text-xs">
             {[
-              { Icon: Truck, label: "Free shipping ₹999+" },
+              { Icon: Truck, label: `Free shipping ₹${shippingSettings.free_above}+` },
               { Icon: ShieldCheck, label: "100% Genuine Products" },
               { Icon: ShieldCheck, label: "Secure checkout" },
             ].map((t) => (
@@ -431,66 +439,66 @@ function ProductDetailPage() {
           </div>
         </div>
       </div>
-                {hasProductDetails && (
-            <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
-              <h3 className="mb-3 text-base font-semibold">
-                Product Details
-              </h3>
+      {hasProductDetails && (
+        <div className="mt-6 rounded-xl border border-border bg-muted/20 p-4">
+          <h3 className="mb-3 text-base font-semibold">
+            Product Details
+          </h3>
 
-              <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
+          <div className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm">
 
-                {selectedVariant?.color && (
-                  <div>
-                    <p className="text-muted-foreground">Color</p>
-                    <p className="font-medium">{selectedVariant.color}</p>
-                  </div>
-                )}
-
-                {selectedVariant?.weight && (
-                  <div>
-                    <p className="text-muted-foreground">Weight</p>
-                    <p className="font-medium">{selectedVariant.weight} g</p>
-                  </div>
-                )}
-
-                {selectedVariant?.material && (
-                  <div>
-                    <p className="text-muted-foreground">Material</p>
-                    <p className="font-medium">{selectedVariant.material}</p>
-                  </div>
-                )}
-
-                {selectedVariant?.purity && (
-                  <div>
-                    <p className="text-muted-foreground">Purity</p>
-                    <p className="font-medium">{selectedVariant.purity}</p>
-                  </div>
-                )}
-
-                {selectedVariant?.finish && (
-                  <div>
-                    <p className="text-muted-foreground">Finish</p>
-                    <p className="font-medium">{selectedVariant.finish}</p>
-                  </div>
-                )}
-
-                {selectedVariant?.style && (
-                  <div>
-                    <p className="text-muted-foreground">Style</p>
-                    <p className="font-medium">{selectedVariant.style}</p>
-                  </div>
-                )}
-
-                {selectedVariant?.occasion && (
-                  <div>
-                    <p className="text-muted-foreground">Occasion</p>
-                    <p className="font-medium">{selectedVariant.occasion}</p>
-                  </div>
-                )}
-
+            {selectedVariant?.color && (
+              <div>
+                <p className="text-muted-foreground">Color</p>
+                <p className="font-medium">{selectedVariant.color}</p>
               </div>
-            </div>
-          )}
+            )}
+
+            {selectedVariant?.weight && (
+              <div>
+                <p className="text-muted-foreground">Weight</p>
+                <p className="font-medium">{selectedVariant.weight} g</p>
+              </div>
+            )}
+
+            {selectedVariant?.material && (
+              <div>
+                <p className="text-muted-foreground">Material</p>
+                <p className="font-medium">{selectedVariant.material}</p>
+              </div>
+            )}
+
+            {selectedVariant?.purity && (
+              <div>
+                <p className="text-muted-foreground">Purity</p>
+                <p className="font-medium">{selectedVariant.purity}</p>
+              </div>
+            )}
+
+            {selectedVariant?.finish && (
+              <div>
+                <p className="text-muted-foreground">Finish</p>
+                <p className="font-medium">{selectedVariant.finish}</p>
+              </div>
+            )}
+
+            {selectedVariant?.style && (
+              <div>
+                <p className="text-muted-foreground">Style</p>
+                <p className="font-medium">{selectedVariant.style}</p>
+              </div>
+            )}
+
+            {selectedVariant?.occasion && (
+              <div>
+                <p className="text-muted-foreground">Occasion</p>
+                <p className="font-medium">{selectedVariant.occasion}</p>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
 
       {filtered.length > 0 && (
         <section className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8">
