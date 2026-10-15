@@ -194,6 +194,21 @@ function CheckoutPage() {
       return;
     }
     const fd = new FormData(e.currentTarget as HTMLFormElement);
+
+    // Validate Indian mobile number and six-digit PIN before any database writes.
+    const phoneInput = String(fd.get("phone") ?? "").trim();
+    const normalizedPhone = phoneInput.replace(/[\s-]/g, "");
+    if (!/^(?:\+91)?[6-9]\d{9}$/.test(normalizedPhone)) {
+      toast.error("Enter a valid 10-digit Indian mobile number, with optional +91");
+      return;
+    }
+
+    const pin = String(fd.get("pin") ?? "").trim();
+    if (!/^\d{6}$/.test(pin)) {
+      toast.error("Enter a valid 6-digit PIN code");
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -252,12 +267,13 @@ function CheckoutPage() {
 
           customer_name: String(fd.get("name") ?? ""),
           customer_email: String(fd.get("email") ?? user.email ?? ""),
-          customer_phone: String(fd.get("phone") ?? ""),
+          customer_phone: phoneInput,
 
-          address_line1: String(fd.get("address") ?? ""),
-          city: String(fd.get("city") ?? ""),
-          state: String(fd.get("state") ?? ""),
-          pincode: String(fd.get("pin") ?? ""),
+          address_line1: String(fd.get("address") ?? "").trim(),
+          address_line2: String(fd.get("locality") ?? "").trim() || null,
+          city: String(fd.get("city") ?? "").trim(),
+          state: String(fd.get("state") ?? "").trim(),
+          pincode: pin,
 
           subtotal: checkoutSubtotal,
           shipping,
@@ -340,24 +356,59 @@ function CheckoutPage() {
                 <input name="email" type="email" required className="input" defaultValue={user?.email ?? ""} placeholder="you@email.com" />
               </Field>
               <Field label="Phone" required>
-                <input name="phone" type="tel" required className="input" placeholder="+91 90000 00000" />
+                <input
+                  name="phone"
+                  type="tel"
+                  required
+                  className="input"
+                  placeholder="+91 98765 43210"
+                  autoComplete="tel"
+                  inputMode="tel"
+                  maxLength={15}
+                  title="Enter a valid 10-digit Indian mobile number, with optional +91"
+                />
               </Field>
             </div>
           </Section>
 
           <Section title="Shipping address">
-            <Field label="Address line" required>
-              <input name="address" required className="input" placeholder="Flat, House no., Street" />
+            <Field label="House / Flat No., Street" required>
+              <input
+                name="address"
+                required
+                className="input"
+                placeholder="Door no., street name"
+                autoComplete="address-line1"
+              />
+            </Field>
+            <Field label="Area / Locality / Landmark" required>
+              <input
+                name="locality"
+                required
+                className="input"
+                placeholder="Area, locality, nearby landmark"
+                autoComplete="address-line2"
+              />
             </Field>
             <div className="grid gap-4 sm:grid-cols-3">
               <Field label="City" required>
-                <input name="city" required className="input" />
+                <input name="city" required className="input" placeholder="City / town / village" autoComplete="address-level2" />
               </Field>
               <Field label="State" required>
-                <input name="state" required className="input" />
+                <input name="state" required className="input" placeholder="State" autoComplete="address-level1" />
               </Field>
               <Field label="PIN" required>
-                <input name="pin" required className="input" pattern="\d{6}" />
+                <input
+                  name="pin"
+                  required
+                  className="input"
+                  placeholder="6-digit PIN"
+                  pattern="[0-9]{6}"
+                  title="Enter a valid 6-digit PIN code"
+                  inputMode="numeric"
+                  autoComplete="postal-code"
+                  maxLength={6}
+                />
               </Field>
             </div>
           </Section>
