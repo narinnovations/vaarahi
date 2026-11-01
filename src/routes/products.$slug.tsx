@@ -8,6 +8,7 @@ import { productBySlugQuery, productsQuery } from "@/lib/queries";
 import { resolveImages } from "@/lib/images";
 import { discountPercent, formatINR } from "@/lib/format";
 import { useCart } from "@/lib/cart";
+import { useWishlist } from "@/lib/wishlist";
 import { ProductCard } from "@/components/site/ProductCard";
 import { useBuyNow } from "@/lib/buy-now";
 import { useSettings } from "@/lib/site-settings";
@@ -47,7 +48,14 @@ function ProductDetailPage() {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedWeight, setSelectedWeight] = useState("");
+  const {
+    add,
+    remove,
+    isWishlisted,
+    loading,
+  } = useWishlist();
 
+  const wishlisted = product ? isWishlisted(product.id) : false;
   const [emblaRef, emblaApi] = useEmblaCarousel({
     loop: false,
     align: "start",
@@ -291,7 +299,7 @@ function ProductDetailPage() {
                 <span className="font-sans text-lg font-normal tracking-normal text-muted-foreground line-through tabular-nums">
                   {formatINR(product.original_price)}
                 </span>
-                ```
+
                 {discount && (
                   <span className="text-ruby text-sm font-semibold">Save {discount}%</span>
                 )}
@@ -402,13 +410,37 @@ function ProductDetailPage() {
               {outOfStock ? "Unavailable" : "Buy Now"}
             </button>
 
-            {/* Wishlist */}
             <button
-              onClick={() => toast.success("Saved to wishlist")}
-              className="hover:bg-blush grid h-14 w-14 place-items-center rounded-full border border-border"
-              aria-label="Add to wishlist"
+              type="button"
+              disabled={loading}
+              onClick={async () => {
+                if (loading) return;
+
+                if (isWishlisted(product.id)) {
+                  const success = await remove(product.id);
+
+                  if (success) {
+                    toast.success("Removed from wishlist");
+                  } else {
+                    toast.error("Unable to remove from wishlist");
+                  }
+                } else {
+                  const success = await add(product.id);
+
+                  if (success) {
+                    toast.success("Added to wishlist");
+                  } else {
+                    toast.error("Please login first");
+                  }
+                }
+              }}
+              className="hover:bg-blush grid h-14 w-14 place-items-center rounded-full border border-border disabled:opacity-50"
+              aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
             >
-              <Heart className="h-5 w-5" />
+              <Heart
+                className={`h-5 w-5 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : ""
+                  }`}
+              />
             </button>
 
             {/* Share */}
