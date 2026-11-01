@@ -229,18 +229,24 @@ function ProductDetailPage() {
             {product.name}
           </h1>
 
-          <div className="mt-3 flex items-center gap-2 text-sm">
-            <div className="flex text-champagne">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-4 w-4 ${i < Math.round(product.rating) ? "fill-champagne" : ""}`}
-                />
-              ))}
+          {product.rating > 0 && product.review_count > 0 && (
+            <div className="mt-3 flex items-center gap-2 text-sm">
+              <div className="flex text-champagne">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-4 w-4 ${i < Math.round(product.rating) ? "fill-champagne" : ""
+                      }`}
+                  />
+                ))}
+              </div>
+
+              <span className="font-medium">{product.rating.toFixed(1)}</span>
+              <span className="text-muted-foreground">
+                · {product.review_count} reviews
+              </span>
             </div>
-            <span className="font-medium">{product.rating.toFixed(1)}</span>
-            <span className="text-muted-foreground">· {product.review_count} reviews</span>
-          </div>
+          )}
           {product.variants.length > 0 && (
             <div className="mt-8 space-y-6">
 
@@ -274,7 +280,7 @@ function ProductDetailPage() {
 
             </div>
           )}
-          
+
           <div className="mt-6 flex flex-wrap items-baseline gap-3">
             <span className="font-sans text-4xl font-bold tracking-normal tabular-nums">
               {formatINR(displayPrice)}

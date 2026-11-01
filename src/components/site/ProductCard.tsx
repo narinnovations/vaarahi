@@ -123,15 +123,17 @@ export function ProductCard({ product }: { product: Product }) {
           </h3>
         </Link>
 
-        <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground sm:mt-1.5 sm:text-xs">
-          <Star className="h-3 w-3 fill-champagne text-champagne sm:h-3.5 sm:w-3.5" />
+        {product.rating > 0 && product.review_count > 0 && (
+          <div className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground sm:mt-1.5 sm:text-xs">
+            <Star className="h-3 w-3 fill-champagne text-champagne sm:h-3.5 sm:w-3.5" />
 
-          <span className="font-medium text-foreground">
-            {product.rating.toFixed(1)}
-          </span>
+            <span className="font-medium text-foreground">
+              {product.rating.toFixed(1)}
+            </span>
 
-          <span>· {product.review_count}</span>
-        </div>
+            <span>· {product.review_count} reviews</span>
+          </div>
+        )}
 
         <div className="mt-2 flex items-end justify-between gap-2 sm:mt-3">
           <div className="flex items-baseline gap-1 sm:gap-2">

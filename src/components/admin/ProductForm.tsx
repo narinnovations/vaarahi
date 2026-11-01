@@ -70,7 +70,7 @@ export function ProductForm({
     price: 0,
     original_price: null,
     stock: 0,
-    rating: 4.5,
+    rating: 0,
     review_count: 0,
     images: [],
     tags: [],
@@ -316,25 +316,32 @@ export function ProductForm({
 
       <div className="space-y-6">
         <Card title="Pricing & Stock">
-          <Field label="Product Rating">
+          <Field label="Product Rating" help="Optional. Leave blank if the product has no rating.">
             <input
               type="number"
               min={0}
               max={5}
               step={0.1}
               className="input"
-              value={f.rating}
-              onChange={(e) => set("rating", Number(e.target.value))}
+              placeholder="No rating"
+              value={f.rating > 0 ? f.rating : ""}
+              onChange={(e) =>
+                set("rating", e.target.value === "" ? 0 : Number(e.target.value))
+              }
             />
           </Field>
 
-          <Field label="Review Count">
+          <Field label="Review Count" help="Enter the number of reviews.">
             <input
               type="number"
               min={0}
+              step={1}
               className="input"
-              value={f.review_count}
-              onChange={(e) => set("review_count", Number(e.target.value))}
+              placeholder="0"
+              value={f.review_count > 0 ? f.review_count : ""}
+              onChange={(e) =>
+                set("review_count", e.target.value === "" ? 0 : Number(e.target.value))
+              }
             />
           </Field>
           <Field label="Selling price (₹)">
